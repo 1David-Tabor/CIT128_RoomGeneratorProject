@@ -6,7 +6,9 @@ CIT 128 Student Directed Project
 ## Student Info
 
 Add your Name, CRN, and Semester Year here using unordered bullets in Markdown.
-* Test
+* David S. Tabor
+* 37902
+* Spring 2022
 
 ## Program Description
 
