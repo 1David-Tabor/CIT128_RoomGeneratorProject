@@ -11,7 +11,7 @@ from turtle import screensize
 class LayoutGenerator(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
-        self.title = 'Layout Generator'
+        self.title('Layout Generator')
         self.labeltext = 'Hello World'
         winSizeMulti = 0.25 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
         self.screen_width = (int(self.winfo_screenwidth() * winSizeMulti))
