@@ -11,7 +11,7 @@ CIT 128 Student Directed Project
 
 ## Program Description
 
-Describe your individual project program and include the goals of the program.
+This program has the goal of generating a dungeon layout from rooms inputted by a user. The user can input their rooms using the "input" tab, and then run the program and see the output layouts. The goal of the program is to generate all permutations of rooms.
 
 ### Video Demonstration
 
