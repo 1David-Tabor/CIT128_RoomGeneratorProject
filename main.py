@@ -5,12 +5,15 @@
     Student Directed Project
 '''
 import tkinter as tk
-from tkinter import Button, Label, ttk, Frame
+from tkinter import ttk, Frame, Button
 
 class Room:
     def __init__(self, roomSize, doorLocations):
         self.roomSize = roomSize
         self.doorLocations = doorLocations
+
+def gridButton(row, column):
+    print(row, column)
 
 # Main app window
 class LayoutGenerator(tk.Tk):
@@ -18,7 +21,7 @@ class LayoutGenerator(tk.Tk):
         tk.Tk.__init__(self)
         self.title('Layout Generator')
         self.labeltext = 'Hello World'
-        winSizeMulti = 1 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
+        winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
         self.screenWidth = (int(self.winfo_screenwidth() * winSizeMulti))
         self.screenHeight = (int(self.winfo_screenheight() * winSizeMulti))
         self.geometry(f"{self.screenWidth}x{self.screenHeight}")
@@ -49,10 +52,10 @@ class LayoutGenerator(tk.Tk):
         gridFrame.grid(row=1, column=0)
 
                 # Using nested for loops to generate a square grid.
-        self.gridSize = 5
+        self.gridSize = 6
         for i in range(self.gridSize):
             for j in range(self.gridSize):
-                btn = Button(gridFrame, height=3 , width=5, command=None)
+                btn = Button(gridFrame, height=3 , width=5, command=lambda: gridButton(i, j))
                 btn.grid(row=i, column=j)
 
         # Quadrants 2 & 4: Room viewer.
