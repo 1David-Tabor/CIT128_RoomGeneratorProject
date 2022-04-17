@@ -5,12 +5,14 @@
     Student Directed Project
 '''
 import tkinter as tk
-from tkinter import ttk, Frame
+from tkinter import Button, ttk, Frame
 
 class Room:
     def __init__(self, roomSize, doorLocations):
         self.roomSize = roomSize
         self.doorLocations = doorLocations
+
+ 
 
 # Main app window
 class LayoutGenerator(tk.Tk):
@@ -28,20 +30,17 @@ class LayoutGenerator(tk.Tk):
         tabs.pack()
         
         inputFrame = Frame(tabs, width=self.screen_width, height=self.screen_width)
-        inputFrame.pack(fill='both', expand=True)
         outputFrame = Frame(tabs, width=self.screen_width, height=self.screen_width)
-        outputFrame.pack(fill='both', expand=True)
         helpFrame = Frame(tabs, width=self.screen_width, height=self.screen_width)
-        helpFrame.pack(fill='both', expand=True)
-
         tabs.add(inputFrame, text='Input')
         tabs.add(outputFrame, text='Output')
         tabs.add(helpFrame, text='Help')
 
-
-        self.labeltext = "hi"
-        self.greeting = tk.Label(inputFrame, text=self.labeltext)
-        self.greeting.pack()
+        self.gridSize = 5
+        for i in range(self.grid_size):
+            for j in range(self.grid_size):
+                btn = Button(inputFrame, height=3 , width=5, command=None)
+                btn.grid(row=i, column=j)
 
 
 
