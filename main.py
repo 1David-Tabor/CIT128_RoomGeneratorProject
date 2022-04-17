@@ -23,23 +23,25 @@ class LayoutGenerator(tk.Tk):
         self.screen_height = (int(self.winfo_screenheight() * winSizeMulti))
         self.geometry(f"{self.screen_width}x{self.screen_height}")
 
-        self.greeting = tk.Label(self, text=self.labeltext)
-        #self.greeting.pack()
-
         #Creating tabs for input, output, and help page.
         tabs = ttk.Notebook(self)
         tabs.pack()
         
-        frame1 = Frame(tabs, width=self.screen_width, height=self.screen_width)
-        frame1.pack(fill='both', expand=True)
-        frame2 = Frame(tabs, width=self.screen_width, height=self.screen_width)
-        frame2.pack(fill='both', expand=True)
-        frame3 = Frame(tabs, width=self.screen_width, height=self.screen_width)
-        frame3.pack(fill='both', expand=True)
+        inputFrame = Frame(tabs, width=self.screen_width, height=self.screen_width)
+        inputFrame.pack(fill='both', expand=True)
+        outputFrame = Frame(tabs, width=self.screen_width, height=self.screen_width)
+        outputFrame.pack(fill='both', expand=True)
+        helpFrame = Frame(tabs, width=self.screen_width, height=self.screen_width)
+        helpFrame.pack(fill='both', expand=True)
 
-        tabs.add(frame1, text='Input')
-        tabs.add(frame2, text='Output')
-        tabs.add(frame3, text='Help')
+        tabs.add(inputFrame, text='Input')
+        tabs.add(outputFrame, text='Output')
+        tabs.add(helpFrame, text='Help')
+
+
+        self.labeltext = "hi"
+        self.greeting = tk.Label(inputFrame, text=self.labeltext)
+        self.greeting.pack()
 
 
 
