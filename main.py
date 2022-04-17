@@ -35,10 +35,11 @@ class LayoutGenerator(tk.Tk):
 
         # Quadrant 1: Size, Door placement, and Confirm buttons.
         controlsFrame = Frame(inputFrame, padx=5, pady=5)
-        controlsFrame.grid(row=0, column=0,)
-        sizeBtn = Button(controlsFrame, height=3, width=5, command=None)
-        doorBtn = Button(controlsFrame, height=3, width=5, command=None)
-        confirmBtn = Button(controlsFrame, height=3 , width=5, command=None)
+        controlsFrame.grid(row=0, column=0)
+        btnHeight, btnWidth = 5, 10
+        sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size', command=None)
+        doorBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Doors', command=None)
+        confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=None)
         sizeBtn.grid(row=0, column=0)
         doorBtn.grid(row=0, column=1)
         confirmBtn.grid(row=0, column=2)
