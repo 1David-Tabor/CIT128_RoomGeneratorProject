@@ -8,12 +8,13 @@ import tkinter as tk
 from tkinter import ttk, Frame, Button
 
 class Room:
-    def __init__(self, roomSize, doorLocations):
+    def __init3__(self, roomSize, doorLocations):
         self.roomSize = roomSize
         self.doorLocations = doorLocations
 
-def gridButton(row, column):
-    print(row, column)
+def gridButton(obj):
+    print("Button Print", obj.gridLocation)
+    
 
 # Main app window
 class LayoutGenerator(tk.Tk):
@@ -52,12 +53,21 @@ class LayoutGenerator(tk.Tk):
         gridFrame.grid(row=1, column=0)
 
                 # Using nested for loops to generate a square grid.
-        self.gridSize = 6
+        self.gridSize = 5
+        self.gridBtns = [] 
+        # ALMOST WORKING. Currently bugged so that each button is just a clone of the last
+        # Button created.  Not sure how to fix this yet.  TODO.
         for i in range(self.gridSize):
-            for j in range(self.gridSize):
-                btn = Button(gridFrame, height=3 , width=5, command=lambda: gridButton(i, j))
+            for j in range(self.gridSize):            
+                btn = Button(gridFrame, height=3 , width=5, command = lambda: gridButton(btn))
+                btn.gridLocation = (i, j)
                 btn.grid(row=i, column=j)
+                self.gridBtns.append(btn)
+        for i in self.gridBtns:
+            print(i.gridLocation)
+            print()
 
+        #print(self.gridBtns)
         # Quadrants 2 & 4: Room viewer.
         viewFrame = Frame(inputFrame, padx=5, pady=5)
         viewFrame.grid(rowspan=2, column=1)
