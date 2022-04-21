@@ -1,15 +1,17 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-f059dc9a6f8d3a56e377f745f24479a46679e63a5d9fe6f495e02850cd0d8118.svg)](https://classroom.github.com/online_ide?assignment_repo_id=7419199&assignment_repo_type=AssignmentRepo)
-# PROJECT TITLE
+# Layout Generator
 
 CIT 128 Student Directed Project
 
 ## Student Info
 
-Add your Name, CRN, and Semester Year here using unordered bullets in Markdown.
+* David S. Tabor
+* 37902
+* Spring 2022
 
 ## Program Description
 
-Describe your individual project program and include the goals of the program.
+This program has the goal of generating a dungeon layout from rooms inputted by a user. The user can input their rooms using the "input" tab, and then run the program and see the output layouts. The goal of the program is to generate all permutations of rooms.
 
 ### Video Demonstration
 
