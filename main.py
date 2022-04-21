@@ -11,15 +11,12 @@ class Room:
     def __init3__(self, roomSize, doorLocations):
         self.roomSize = roomSize
         self.doorLocations = doorLocations
-
-def gridButton(obj):
-    print("Button Print", obj.gridLocation)
-    
-
+BTN_CLICK = '<Button-1>'
 # Main app window
 class LayoutGenerator(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
+        self.btns = dict({})
         self.title('Layout Generator')
         self.labeltext = 'Hello World'
         winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
@@ -43,7 +40,8 @@ class LayoutGenerator(tk.Tk):
         btnHeight, btnWidth = 5, 10
         sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size', command=None)
         doorBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Doors', command=None)
-        confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=None)
+        confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=self.btnMthd)
+
         sizeBtn.grid(row=0, column=0)
         doorBtn.grid(row=0, column=1)
         confirmBtn.grid(row=0, column=2)
@@ -54,23 +52,39 @@ class LayoutGenerator(tk.Tk):
 
                 # Using nested for loops to generate a square grid.
         self.gridSize = 5
-        self.gridBtns = [] 
         # ALMOST WORKING. Currently bugged so that each button is just a clone of the last
         # Button created.  Not sure how to fix this yet.  TODO.
         for i in range(self.gridSize):
-            for j in range(self.gridSize):            
-                btn = Button(gridFrame, height=3 , width=5, command = lambda: gridButton(btn))
-                btn.gridLocation = (i, j)
-                btn.grid(row=i, column=j)
-                self.gridBtns.append(btn)
-        for i in self.gridBtns:
-            print(i.gridLocation)
-            print()
+            for j in range(self.gridSize):
+                if j == 0:
+                    self.btns[i] = {}
 
-        #print(self.gridBtns)
+                btn = {
+                    "coords": {
+                        "i": i,
+                        "j": j },
+                    "button": Button(gridFrame, height=3, width=5)
+                }
+                btn["button"].bind(BTN_CLICK, self.gridButtonWrapper(i, j))
+                #btn = Button(gridFrame, height=3 , width=5, command = self.gridButton(gridLocation))
+                #btn.grid(row=i, column=j)
+                btn["button"].grid(row = i, column = j)
+                self.btns[i][j] = btn
+
+
         # Quadrants 2 & 4: Room viewer.
         viewFrame = Frame(inputFrame, padx=5, pady=5)
         viewFrame.grid(rowspan=2, column=1)
+        
+    def gridButtonWrapper(self, i, j):
+        return lambda Button: self.gridButton(i, j) #self.btns[i][j]
+
+    def gridButton(self, i, j):
+        print(i ,j)
+
+    def btnMthd(self):
+        print(self.btns)
+    
 
 a = LayoutGenerator()
 a.mainloop()
