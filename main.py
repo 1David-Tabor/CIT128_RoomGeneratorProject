@@ -19,9 +19,12 @@ class LayoutGenerator(tk.Tk):
         self.btns = dict({})
         self.title('Layout Generator')
         self.labeltext = 'Hello World'
-        winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
-        self.screenWidth = (int(self.winfo_screenwidth() * winSizeMulti))
-        self.screenHeight = (int(self.winfo_screenheight() * winSizeMulti))
+        self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
+        self.screenSetup()
+    
+    def screenSetup(self):
+        self.screenWidth = (int(self.winfo_screenwidth() * self.winSizeMulti))
+        self.screenHeight = (int(self.winfo_screenheight() * self.winSizeMulti))
         self.geometry(f"{self.screenWidth}x{self.screenHeight}")
 
         #Creating tabs for input, output, and help page.
@@ -60,9 +63,9 @@ class LayoutGenerator(tk.Tk):
                     self.btns[i] = {}
 
                 btn = {
-                    "coords": {
-                        "i": i,
-                        "j": j },
+                    "position": {
+                        "row": i,
+                        "column": j },
                     "button": Button(gridFrame, height=3, width=5)
                 }
                 btn["button"].bind(BTN_CLICK, self.gridButtonWrapper(i, j))
@@ -71,16 +74,15 @@ class LayoutGenerator(tk.Tk):
                 btn["button"].grid(row = i, column = j)
                 self.btns[i][j] = btn
 
-
         # Quadrants 2 & 4: Room viewer.
         viewFrame = Frame(inputFrame, padx=5, pady=5)
         viewFrame.grid(rowspan=2, column=1)
         
     def gridButtonWrapper(self, i, j):
-        return lambda Button: self.gridButton(i, j) #self.btns[i][j]
+        return lambda Button: self.gridButton(self.btns[i][j]) #self.btns[i][j]
 
-    def gridButton(self, i, j):
-        print(i ,j)
+    def gridButton(self, btn):
+        print(btn["position"])
 
     def btnMthd(self):
         print(self.btns)
