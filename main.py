@@ -7,11 +7,14 @@
 import tkinter as tk
 from tkinter import ttk, Frame, Button
 
+BTN_CLICK = '<Button-1>' #Binds buttons to left click.
+
 class Room:
-    def __init3__(self, roomSize, doorLocations):
+    """Currently not used, data structure to store each room."""
+    def __init__(self, roomSize, doorLocations):
         self.roomSize = roomSize
         self.doorLocations = doorLocations
-BTN_CLICK = '<Button-1>'
+
 # Main app window
 class LayoutGenerator(tk.Tk):
     def __init__(self):
@@ -41,7 +44,7 @@ class LayoutGenerator(tk.Tk):
         controlsFrame = Frame(inputFrame, padx=5, pady=5)
         controlsFrame.grid(row=0, column=0)
         btnHeight, btnWidth = 5, 10
-        sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size', command=None)
+        sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size',  command=None)
         doorBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Doors', command=None)
         confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=self.btnMthd)
 
@@ -69,8 +72,8 @@ class LayoutGenerator(tk.Tk):
                     "button": Button(gridFrame, height=3, width=5)
                 }
                 btn["button"].bind(BTN_CLICK, self.gridButtonWrapper(i, j))
-                #btn = Button(gridFrame, height=3 , width=5, command = self.gridButton(gridLocation))
-                #btn.grid(row=i, column=j)
+                """Binds the gridButtonWrapper command to left click with inputs i and j. Gridbuttonwrapper
+                returns a lambda with a button command "gridButton" based on the position of the button"""
                 btn["button"].grid(row = i, column = j)
                 self.btns[i][j] = btn
 
@@ -78,15 +81,14 @@ class LayoutGenerator(tk.Tk):
         viewFrame = Frame(inputFrame, padx=5, pady=5)
         viewFrame.grid(rowspan=2, column=1)
         
-    def gridButtonWrapper(self, i, j):
-        return lambda Button: self.gridButton(self.btns[i][j]) #self.btns[i][j]
+    def gridButtonWrapper(self, i, j): 
+        return lambda Button: self.gridButton(self.btns[i][j])
 
     def gridButton(self, btn):
         print(btn["position"])
 
     def btnMthd(self):
         print(self.btns)
-    
 
 a = LayoutGenerator()
 a.mainloop()
