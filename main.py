@@ -7,7 +7,8 @@
 import tkinter as tk
 from tkinter import ttk, Frame, Button
 
-BTN_CLICK = '<Button-1>' #Binds buttons to left click.
+BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
+BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
 
 class Room:
     """Currently not used, data structure to store each room."""
@@ -71,7 +72,8 @@ class LayoutGenerator(tk.Tk):
                         "column": j },
                     "button": Button(gridFrame, height=3, width=5)
                 }
-                btn["button"].bind(BTN_CLICK, self.gridButtonWrapper(i, j))
+                btn["button"].bind(BTN_L_CLICK, self.gridButtonLeftWrapper(i, j))
+                btn["button"].bind(BTN_R_CLICK, self.gridButtonRightWrapper(i, j))
                 """Binds the gridButtonWrapper command to left click with inputs i and j. Gridbuttonwrapper
                 returns a lambda with a button command "gridButton" based on the position of the button"""
                 btn["button"].grid(row = i, column = j)
@@ -81,11 +83,17 @@ class LayoutGenerator(tk.Tk):
         viewFrame = Frame(inputFrame, padx=5, pady=5)
         viewFrame.grid(rowspan=2, column=1)
         
-    def gridButtonWrapper(self, i, j): 
-        return lambda Button: self.gridButton(self.btns[i][j])
-
-    def gridButton(self, btn):
+    #LEFT CLICK BUTTON ACTION
+    def gridButtonLeftWrapper(self, i, j): 
+        return lambda Button: self.gridButtonLeft(self.btns[i][j])
+    def gridButtonLeft(self, btn):
         print(btn["position"])
+
+    #RIGHT CLICK BUTTON ACTION
+    def gridButtonRightWrapper(self, i, j): 
+        return lambda Button: self.gridButtonRight(self.btns[i][j])
+    def gridButtonRight(self, btn):
+        print("Right Clicked")
 
     def btnMthd(self):
         print(self.btns)
