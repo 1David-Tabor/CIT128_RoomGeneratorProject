@@ -24,6 +24,7 @@ class LayoutGenerator(tk.Tk):
         self.title('Layout Generator')
         self.labeltext = 'Hello World'
         self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
+        self.curr_roomsize = {'x':0, 'y':0}
         self.screenSetup()
     
     def screenSetup(self):
@@ -67,9 +68,8 @@ class LayoutGenerator(tk.Tk):
                     self.btns[i] = {}
 
                 btn = {
-                    "position": {
-                        "row": i,
-                        "column": j },
+                    "ypos": i,
+                    "xpos": j,
                     "button": Button(gridFrame, height=3, width=5)
                 }
                 btn["button"].bind(BTN_L_CLICK, self.gridButtonLeftWrapper(i, j))
@@ -87,13 +87,15 @@ class LayoutGenerator(tk.Tk):
     def gridButtonLeftWrapper(self, i, j): 
         return lambda Button: self.gridButtonLeft(self.btns[i][j])
     def gridButtonLeft(self, btn):
-        print(btn["position"])
-
+        self.curr_roomsize['x'] = btn['xpos']
+        self.curr_roomsize['y'] = btn['ypos']
+        print(self.curr_roomsize)
+        
     #RIGHT CLICK BUTTON ACTION
     def gridButtonRightWrapper(self, i, j): 
         return lambda Button: self.gridButtonRight(self.btns[i][j])
     def gridButtonRight(self, btn):
-        print("Right Clicked")
+        print('Right Clicked')
 
     def btnMthd(self):
         print(self.btns)
