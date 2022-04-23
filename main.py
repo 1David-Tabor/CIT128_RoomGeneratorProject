@@ -26,7 +26,24 @@ class LayoutGenerator(tk.Tk):
         self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
         self.curr_roomsize = {'x':0, 'y':0}
         self.screenSetup()
-    
+
+    def makeButtonGrid(self, size, frame):
+        for i in range(size):
+            for j in range(size):
+                if j == 0:
+                    self.btns[i] = {}
+                btn = {
+                    'ypos': i,
+                    'xpos': j,
+                    'button': Button(frame, height=3, width=5)
+                }
+                btn['button'].bind(BTN_L_CLICK, self.gridButtonLeftWrapper(i, j))
+                btn['button'].bind(BTN_R_CLICK, self.gridButtonRightWrapper(i, j))
+                """Binds the gridButtonWrapper command to left click with inputs i and j. Gridbuttonwrapper
+                returns a lambda with a button command "gridButton" based on the position of the button"""
+                btn["button"].grid(row = i, column = j)
+                self.btns[i][j] = btn
+
     def screenSetup(self):
         self.screenWidth = (int(self.winfo_screenwidth() * self.winSizeMulti))
         self.screenHeight = (int(self.winfo_screenheight() * self.winSizeMulti))
@@ -57,32 +74,14 @@ class LayoutGenerator(tk.Tk):
         # Quadrant 3: room editing grid.
         gridFrame = Frame(inputFrame, padx=5, pady=5)
         gridFrame.grid(row=1, column=0)
-
-                # Using nested for loops to generate a square grid.
-        self.gridSize = 5
-        # ALMOST WORKING. Currently bugged so that each button is just a clone of the last
-        # Button created.  Not sure how to fix this yet.  TODO.
-        for i in range(self.gridSize):
-            for j in range(self.gridSize):
-                if j == 0:
-                    self.btns[i] = {}
-
-                btn = {
-                    "ypos": i,
-                    "xpos": j,
-                    "button": Button(gridFrame, height=3, width=5)
-                }
-                btn["button"].bind(BTN_L_CLICK, self.gridButtonLeftWrapper(i, j))
-                btn["button"].bind(BTN_R_CLICK, self.gridButtonRightWrapper(i, j))
-                """Binds the gridButtonWrapper command to left click with inputs i and j. Gridbuttonwrapper
-                returns a lambda with a button command "gridButton" based on the position of the button"""
-                btn["button"].grid(row = i, column = j)
-                self.btns[i][j] = btn
-
+        gridSize = 5
+        self.makeButtonGrid(gridSize, gridFrame)
+        
         # Quadrants 2 & 4: Room viewer.
         viewFrame = Frame(inputFrame, padx=5, pady=5)
         viewFrame.grid(rowspan=2, column=1)
-        
+
+
     #LEFT CLICK BUTTON ACTION
     def gridButtonLeftWrapper(self, i, j): 
         return lambda Button: self.gridButtonLeft(self.btns[i][j])
