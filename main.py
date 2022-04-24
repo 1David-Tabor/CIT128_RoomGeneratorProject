@@ -12,9 +12,9 @@ BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
 
 class Room:
     """Currently not used, data structure to store each room."""
-    def __init__(self, roomSize, doorLocations):
+    def __init__(self, roomSize):
         self.roomSize = roomSize
-        self.doorLocations = doorLocations
+        #self.doorLocations = doorLocations
 
 # Main app window
 class LayoutGenerator(tk.Tk):
@@ -72,8 +72,8 @@ class LayoutGenerator(tk.Tk):
         controlsFrame.grid(row=0, column=0)
         btnHeight, btnWidth = 5, 10
         sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size',  command=None)
-        doorBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Doors', command=self.btnMthdCopy)
-        confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=self.btnMthd)
+        doorBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Doors', command=None)
+        confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=self.confirmRoom)
 
         sizeBtn.grid(row=0, column=0)
         doorBtn.grid(row=0, column=1)
@@ -118,16 +118,9 @@ class LayoutGenerator(tk.Tk):
         self.roomSize['x'] = 0
         self.roomSize['y'] = 0
 
-    def btnMthd(self):
-        for i in range(3):
-            for j in range(3):
-                btn = self.btns[i][j]
-                self.updateIcon(btn['button'], self.icon3)
-    def btnMthdCopy(self):
-        for i in range(3):
-            for j in range(3):
-                btn = self.btns[i][j]
-                self.updateIcon(btn['button'], self.icon1)
+    def confirmRoom(self):
+        r = Room(roomSize=self.roomSize)
+        print(r)
         #print(self.btns)
 
 a = LayoutGenerator()
