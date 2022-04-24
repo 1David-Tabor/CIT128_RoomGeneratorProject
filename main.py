@@ -45,7 +45,6 @@ class LayoutGenerator(tk.Tk):
                     'button': Button(frame, height=50, width=50, image=self.icons['default']),
                     'image' : self.icons['default']
                 }
-                #btn['button'].image = icon
                 btn['button'].bind(BTN_L_CLICK, self.gridButtonLeftWrapper(i, j))
                 btn['button'].bind(BTN_R_CLICK, self.gridButtonRightWrapper(i, j))
                 """Binds the gridButtonWrapper command to left click with inputs i and j. Gridbuttonwrapper
@@ -97,11 +96,7 @@ class LayoutGenerator(tk.Tk):
         self.clearSize()
         self.roomSize['x'] = btn['xpos']
         self.roomSize['y'] = btn['ypos']
-
-        for i in range(btn['ypos']+1):
-            for j in range(btn['xpos']+1):
-                currBtn = self.btns[i][j]
-                self.updateIcon(currBtn['button'], self.icons['selected'])
+        self.updateIcons(btn['xpos'], btn['ypos'], self.icons['selected'])
         print(self.roomSize)
         
     #RIGHT CLICK BUTTON ACTION
@@ -110,16 +105,16 @@ class LayoutGenerator(tk.Tk):
     def gridButtonRight(self, btn):
         print('Right Clicked')
 
-    def updateIcon(self, btn, icon):
-        btn.config(image=icon)
-        btn.image = icon
+    def updateIcons(self, x, y, icon):
+        for i in range(y+1):
+            for j in range(x+1):
+                currBtn = self.btns[i][j]
+                currBtn['button'].configure(image=icon)
+                currBtn['button'].image = icon
     
     def clearSize(self):
         #Resets all icons on grid and sets room size to 0.
-        for i in range(self.roomSize['y']+1):
-            for j in range(self.roomSize['x']+1):
-                currBtn = self.btns[i][j]
-                self.updateIcon(currBtn['button'], self.icons['default'])
+        self.updateIcons(self.roomSize['x'], self.roomSize['y'], self.icons['default'])
         self.roomSize['x'] = 0
         self.roomSize['y'] = 0
 
