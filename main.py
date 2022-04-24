@@ -24,15 +24,17 @@ class LayoutGenerator(tk.Tk):
         self.title('Layout Generator')
         self.labeltext = 'Hello World'
         self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
-        self.curr_roomsize = {'x':0, 'y':0}
+        self.roomSize = {'x':0, 'y':0}
         self.screenSetup()
         
     
 
     def makeButtonGrid(self, size, frame):
-        self.icon1 = PhotoImage(file='image4.png')
-        self.icon2 = PhotoImage(file='image2.png')
-        self.icon3 = PhotoImage(file='image5.png')
+        self.icons = {
+            'default'  : PhotoImage(file='tanbox.png'),
+            'white'    : PhotoImage(file='image2.png'),
+            'selected' : PhotoImage(file='redbox.png')
+        }
         for i in range(size):
             for j in range(size):
                 if j == 0:
@@ -40,8 +42,8 @@ class LayoutGenerator(tk.Tk):
                 btn = {
                     'ypos'  : i,
                     'xpos'  : j,
-                    'button': Button(frame, height=50, width=50, image=self.icon1),
-                    'image' : self.icon1
+                    'button': Button(frame, height=50, width=50, image=self.icons['default']),
+                    'image' : self.icons['default']
                 }
                 #btn['button'].image = icon
                 btn['button'].bind(BTN_L_CLICK, self.gridButtonLeftWrapper(i, j))
@@ -92,24 +94,34 @@ class LayoutGenerator(tk.Tk):
     def gridButtonLeftWrapper(self, i, j): 
         return lambda Button: self.gridButtonLeft(self.btns[i][j])
     def gridButtonLeft(self, btn):
-        self.curr_roomsize['x'] = btn['xpos']
-        self.curr_roomsize['y'] = btn['ypos']
-            #TODO! Make so room size selection is displayed.
-        for i in range(self.curr_roomsize['x']):
-            for j in range(self.curr_roomsize['x']):
-                pass
+        self.clearSize()
+        self.roomSize['x'] = btn['xpos']
+        self.roomSize['y'] = btn['ypos']
 
-        print(self.curr_roomsize)
+        for i in range(btn['ypos']+1):
+            for j in range(btn['xpos']+1):
+                currBtn = self.btns[i][j]
+                self.updateIcon(currBtn['button'], self.icons['selected'])
+        print(self.roomSize)
         
     #RIGHT CLICK BUTTON ACTION
     def gridButtonRightWrapper(self, i, j): 
         return lambda Button: self.gridButtonRight(self.btns[i][j])
     def gridButtonRight(self, btn):
         print('Right Clicked')
-    
+
     def updateIcon(self, btn, icon):
         btn.config(image=icon)
         btn.image = icon
+    
+    def clearSize(self):
+        #Resets all icons on grid and sets room size to 0.
+        for i in range(self.roomSize['y']+1):
+            for j in range(self.roomSize['x']+1):
+                currBtn = self.btns[i][j]
+                self.updateIcon(currBtn['button'], self.icons['default'])
+        self.roomSize['x'] = 0
+        self.roomSize['y'] = 0
 
     def btnMthd(self):
         for i in range(3):
