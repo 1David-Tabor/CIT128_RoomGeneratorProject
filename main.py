@@ -5,7 +5,7 @@
     Student Directed Project
 '''
 import tkinter as tk
-from tkinter import ttk, Frame, Button
+from tkinter import ttk, Frame, Button, PhotoImage
 
 BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
 BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
@@ -26,17 +26,24 @@ class LayoutGenerator(tk.Tk):
         self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
         self.curr_roomsize = {'x':0, 'y':0}
         self.screenSetup()
+        
+    
 
     def makeButtonGrid(self, size, frame):
+        self.icon1 = PhotoImage(file='image4.png')
+        self.icon2 = PhotoImage(file='image2.png')
+        self.icon3 = PhotoImage(file='image5.png')
         for i in range(size):
             for j in range(size):
                 if j == 0:
                     self.btns[i] = {}
                 btn = {
-                    'ypos': i,
-                    'xpos': j,
-                    'button': Button(frame, height=3, width=5)
+                    'ypos'  : i,
+                    'xpos'  : j,
+                    'button': Button(frame, height=50, width=50, image=self.icon1),
+                    'image' : self.icon1
                 }
+                #btn['button'].image = icon
                 btn['button'].bind(BTN_L_CLICK, self.gridButtonLeftWrapper(i, j))
                 btn['button'].bind(BTN_R_CLICK, self.gridButtonRightWrapper(i, j))
                 """Binds the gridButtonWrapper command to left click with inputs i and j. Gridbuttonwrapper
@@ -64,7 +71,7 @@ class LayoutGenerator(tk.Tk):
         controlsFrame.grid(row=0, column=0)
         btnHeight, btnWidth = 5, 10
         sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size',  command=None)
-        doorBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Doors', command=None)
+        doorBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Doors', command=self.btnMthdCopy)
         confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=self.btnMthd)
 
         sizeBtn.grid(row=0, column=0)
@@ -81,13 +88,17 @@ class LayoutGenerator(tk.Tk):
         viewFrame = Frame(inputFrame, padx=5, pady=5)
         viewFrame.grid(rowspan=2, column=1)
 
-
     #LEFT CLICK BUTTON ACTION
     def gridButtonLeftWrapper(self, i, j): 
         return lambda Button: self.gridButtonLeft(self.btns[i][j])
     def gridButtonLeft(self, btn):
         self.curr_roomsize['x'] = btn['xpos']
         self.curr_roomsize['y'] = btn['ypos']
+            #TODO! Make so room size selection is displayed.
+        for i in range(self.curr_roomsize['x']):
+            for j in range(self.curr_roomsize['x']):
+                pass
+
         print(self.curr_roomsize)
         
     #RIGHT CLICK BUTTON ACTION
@@ -95,9 +106,22 @@ class LayoutGenerator(tk.Tk):
         return lambda Button: self.gridButtonRight(self.btns[i][j])
     def gridButtonRight(self, btn):
         print('Right Clicked')
+    
+    def updateIcon(self, btn, icon):
+        btn.config(image=icon)
+        btn.image = icon
 
     def btnMthd(self):
-        print(self.btns)
+        for i in range(3):
+            for j in range(3):
+                btn = self.btns[i][j]
+                self.updateIcon(btn['button'], self.icon3)
+    def btnMthdCopy(self):
+        for i in range(3):
+            for j in range(3):
+                btn = self.btns[i][j]
+                self.updateIcon(btn['button'], self.icon1)
+        #print(self.btns)
 
 a = LayoutGenerator()
 a.mainloop()
