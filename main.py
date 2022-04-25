@@ -28,13 +28,11 @@ class LayoutGenerator(tk.Tk):
         self.roomSize = {'x':0, 'y':0}
         self.screenSetup()
         
-    
-
     def makeButtonGrid(self, size, frame):
         self.icons = {
-            'default'  : PhotoImage(file='tanbox.png'),
-            'white'    : PhotoImage(file='image2.png'),
-            'selected' : PhotoImage(file='redbox.png')
+            'default'  : PhotoImage(file='images/tanbox.png'),
+            'white'    : PhotoImage(file='images/image2.png'),
+            'selected' : PhotoImage(file='images/redbox.png')
         }
         for i in range(size):
             for j in range(size):
@@ -108,6 +106,7 @@ class LayoutGenerator(tk.Tk):
         y = btn['ypos']
         if x == 0 and y <= self.roomSize['y']: #West wall,
             print("WEST WALL")
+            self.updateIcons(x, y, self.icons['white'], batch=False)
 
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL")
@@ -118,13 +117,19 @@ class LayoutGenerator(tk.Tk):
         if y == self.roomSize['y'] and x <= self.roomSize['x']: #South wall,
             print("SOUTH WALL")
 
-    def updateIcons(self, x, y, icon):
-        for i in range(y+1):
-            for j in range(x+1):
-                currBtn = self.btns[i][j]
-                currBtn['button'].configure(image=icon)
-                currBtn['button'].image = icon
-    
+    def updateIcons(self, x, y, icon, batch=True):
+        if batch == True:
+            for i in range(y+1):
+                for j in range(x+1):
+                    currBtn = self.btns[i][j]
+                    currBtn['button'].configure(image=icon)
+                    currBtn['button'].image = icon
+        else:
+            currBtn = self.btns[y][x]
+            currBtn['button'].configure(image=icon)
+            currBtn['button'].image = icon
+
+        
     def clearSize(self):
         #Resets all icons on grid and sets room size to 0.
         self.updateIcons(self.roomSize['x'], self.roomSize['y'], self.icons['default'])
