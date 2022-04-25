@@ -108,10 +108,15 @@ class LayoutGenerator(tk.Tk):
         y = btn['ypos']
         if x == 0 and y <= self.roomSize['y']: #West wall,
             print("WEST WALL")
-        if btn['ypos'] == 0: #North wall,
+
+        if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL")
-        #if btn['xpos'] == 0:
-        #print('Right Clicked')
+
+        if x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
+            print("EAST WALL")
+
+        if y == self.roomSize['y'] and x <= self.roomSize['x']: #South wall,
+            print("SOUTH WALL")
 
     def updateIcons(self, x, y, icon):
         for i in range(y+1):
