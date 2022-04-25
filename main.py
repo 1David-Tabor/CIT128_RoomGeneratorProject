@@ -11,9 +11,10 @@ BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
 BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
 
 class Room:
-    """Currently not used, data structure to store each room."""
+    """data structure to store each room."""
     def __init__(self, roomSize):
         self.roomSize = roomSize
+        print('room created of size:', self.roomSize)
         #self.doorLocations = doorLocations
 
 # Main app window
@@ -103,7 +104,14 @@ class LayoutGenerator(tk.Tk):
     def gridButtonRightWrapper(self, i, j): 
         return lambda Button: self.gridButtonRight(self.btns[i][j])
     def gridButtonRight(self, btn):
-        print('Right Clicked')
+        x = btn['xpos']
+        y = btn['ypos']
+        if x == 0 and y <= self.roomSize['y']: #West wall,
+            print("WEST WALL")
+        if btn['ypos'] == 0: #North wall,
+            print("NORTH WALL")
+        #if btn['xpos'] == 0:
+        #print('Right Clicked')
 
     def updateIcons(self, x, y, icon):
         for i in range(y+1):
