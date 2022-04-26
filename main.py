@@ -110,6 +110,7 @@ class LayoutGenerator(tk.Tk):
         x = btn['xpos']
         y = btn['ypos']
         #TODO Currently corners aren't handled.  Simply prioritizeds vertical travel.
+        #Direction 0 = north south doorway.  Direction 1 = east west doorway.
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL")
             validDoor = True
@@ -121,9 +122,11 @@ class LayoutGenerator(tk.Tk):
         elif x == 0 and y <= self.roomSize['y']: #West wall,
             print("WEST WALL")
             validDoor = True
+            direction = 1
         elif x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
             print("EAST WALL")
             validDoor = True
+            direction = 1
 
         if validDoor:
             if self.currDoor is not None: #if door already selected, delete prev selection.
@@ -131,6 +134,7 @@ class LayoutGenerator(tk.Tk):
                 self.currDoor = dict({})
             self.currDoor = {'x':x,'y':y,'direction':direction}
             self.updateIcons(x, y, self.icons['white'], batch=False)
+            print(self.currDoor)
 
     def updateIcons(self, x, y, icon, batch=True):
         if batch == True:
