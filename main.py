@@ -24,7 +24,6 @@ class LayoutGenerator(tk.Tk):
         tk.Tk.__init__(self)
         self.btns = dict({})
         self.title('Layout Generator')
-        self.labeltext = 'Hello World'
         self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
         self.roomSize = {'x':0, 'y':0}
         self.currDoor = None
@@ -94,17 +93,20 @@ class LayoutGenerator(tk.Tk):
     def gridButtonLeftWrapper(self, i, j): 
         return lambda Button: self.gridButtonLeft(self.btns[i][j])
     def gridButtonLeft(self, btn):
-        self.clearSize()
+        print("L Click") # DELETE
+        if self.roomSize != {'x':0,'y':0}:
+            self.currDoor = None
+            self.clearSize()
         self.roomSize['x'] = btn['xpos']
         self.roomSize['y'] = btn['ypos']
         self.updateIcons(btn['xpos'], btn['ypos'], self.icons['selected'])
-        print(self.roomSize)
+        print(self.roomSize) # DELETE
         
     #RIGHT CLICK BUTTON ACTION
     def gridButtonRightWrapper(self, i, j):
         return lambda Button: self.gridButtonRight(self.btns[i][j])
     def gridButtonRight(self, btn):
-        print("R Click")
+        print("R Click") # DELETE
         validDoor = False
         direction = None
         x = btn['xpos']
@@ -112,19 +114,19 @@ class LayoutGenerator(tk.Tk):
         #TODO Currently corners aren't handled.  Simply prioritizeds vertical travel.
         #Direction 0 = north south doorway.  Direction 1 = east west doorway.
         if y == 0 and x <= self.roomSize['x']: #North wall,
-            print("NORTH WALL")
+            print("NORTH WALL") # DELETE
             validDoor = True
             direction = 0
         elif y == self.roomSize['y'] and x <= self.roomSize['x']: #South wall,
-            print("SOUTH WALL")
+            print("SOUTH WALL") # DELETE
             validDoor = True
             direction = 0
         elif x == 0 and y <= self.roomSize['y']: #West wall,
-            print("WEST WALL")
+            print("WEST WALL") # DELETE
             validDoor = True
             direction = 1
         elif x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
-            print("EAST WALL")
+            print("EAST WALL") # DELETE
             validDoor = True
             direction = 1
 
@@ -137,7 +139,7 @@ class LayoutGenerator(tk.Tk):
             print(self.currDoor)
 
     def updateIcons(self, x, y, icon, batch=True):
-        print("Updating Icons:",x, y)
+        print("Updating Icons:",x, y) # DELETE
         if batch == True:
             for i in range(y+1):
                 for j in range(x+1):
