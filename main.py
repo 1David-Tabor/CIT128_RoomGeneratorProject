@@ -12,8 +12,9 @@ BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
 
 class Room:
     """data structure to store each room."""
-    def __init__(self, roomSize):
+    def __init__(self, roomSize, doorPositions):
         self.roomSize = roomSize
+        self.doors = doorPositions
         print('room created of size:', self.roomSize)
         #self.doorLocations = doorLocations
 
@@ -125,7 +126,7 @@ class LayoutGenerator(tk.Tk):
             self.currDoor = {'x':x,'y':y,}
             self.updateIcons(x, y, self.icons['white'], batch=False)
 
-
+ 
 
     def updateIcons(self, x, y, icon, batch=True):
         if batch == True:
