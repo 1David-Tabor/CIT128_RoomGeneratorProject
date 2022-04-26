@@ -109,7 +109,7 @@ class LayoutGenerator(tk.Tk):
         direction = None
         x = btn['xpos']
         y = btn['ypos']
-        #TODO Currently corners aren't handled.  Simply prioritizeds verticle travel.
+        #TODO Currently corners aren't handled.  Simply prioritizeds vertical travel.
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL")
             validDoor = True
