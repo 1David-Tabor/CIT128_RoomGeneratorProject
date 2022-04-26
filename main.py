@@ -26,6 +26,7 @@ class LayoutGenerator(tk.Tk):
         self.labeltext = 'Hello World'
         self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
         self.roomSize = {'x':0, 'y':0}
+        self.currDoor = None
         self.screenSetup()
         
     def makeButtonGrid(self, size, frame):
@@ -102,20 +103,32 @@ class LayoutGenerator(tk.Tk):
     def gridButtonRightWrapper(self, i, j): 
         return lambda Button: self.gridButtonRight(self.btns[i][j])
     def gridButtonRight(self, btn):
+        if self.currDoor is not None: #if door already selected, delete prev selection.
+            self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['selected'], batch=False)
+        validDoor = False
         x = btn['xpos']
         y = btn['ypos']
         if x == 0 and y <= self.roomSize['y']: #West wall,
             print("WEST WALL")
-            self.updateIcons(x, y, self.icons['white'], batch=False)
+            validDoor = True
 
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL")
+            validDoor = True
 
         if x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
             print("EAST WALL")
+            validDoor = True
 
         if y == self.roomSize['y'] and x <= self.roomSize['x']: #South wall,
             print("SOUTH WALL")
+            validDoor = True
+
+        if validDoor:
+            self.currDoor = {'x':x,'y':y,}
+            self.updateIcons(x, y, self.icons['white'], batch=False)
+
+
 
     def updateIcons(self, x, y, icon, batch=True):
         if batch == True:
