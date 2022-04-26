@@ -103,28 +103,25 @@ class LayoutGenerator(tk.Tk):
     def gridButtonRightWrapper(self, i, j): 
         return lambda Button: self.gridButtonRight(self.btns[i][j])
     def gridButtonRight(self, btn):
-        if self.currDoor is not None: #if door already selected, delete prev selection.
-            self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['selected'], batch=False)
         validDoor = False
         x = btn['xpos']
         y = btn['ypos']
         if x == 0 and y <= self.roomSize['y']: #West wall,
             print("WEST WALL")
             validDoor = True
-
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL")
             validDoor = True
-
         if x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
             print("EAST WALL")
             validDoor = True
-
         if y == self.roomSize['y'] and x <= self.roomSize['x']: #South wall,
             print("SOUTH WALL")
             validDoor = True
 
         if validDoor:
+            if self.currDoor is not None: #if door already selected, delete prev selection.
+                self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['selected'], batch=False)
             self.currDoor = {'x':x,'y':y,}
             self.updateIcons(x, y, self.icons['white'], batch=False)
 
