@@ -73,11 +73,11 @@ class LayoutGenerator(tk.Tk):
         controlsFrame.grid(row=0, column=0)
         btnHeight, btnWidth = 5, 10
         sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size',  command=None)
-        doorBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Doors', command=None)
+        doorConfirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Door\nConfirm', command=None)
         confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=self.confirmRoom)
 
         sizeBtn.grid(row=0, column=0)
-        doorBtn.grid(row=0, column=1)
+        doorConfirmBtn.grid(row=0, column=1)
         confirmBtn.grid(row=0, column=2)
 
         # Quadrant 3: room editing grid.
@@ -101,9 +101,10 @@ class LayoutGenerator(tk.Tk):
         print(self.roomSize)
         
     #RIGHT CLICK BUTTON ACTION
-    def gridButtonRightWrapper(self, i, j): 
+    def gridButtonRightWrapper(self, i, j):
         return lambda Button: self.gridButtonRight(self.btns[i][j])
     def gridButtonRight(self, btn):
+        print("R Click")
         validDoor = False
         x = btn['xpos']
         y = btn['ypos']
@@ -125,8 +126,6 @@ class LayoutGenerator(tk.Tk):
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['selected'], batch=False)
             self.currDoor = {'x':x,'y':y,}
             self.updateIcons(x, y, self.icons['white'], batch=False)
-
- 
 
     def updateIcons(self, x, y, icon, batch=True):
         if batch == True:
