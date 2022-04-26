@@ -106,25 +106,30 @@ class LayoutGenerator(tk.Tk):
     def gridButtonRight(self, btn):
         print("R Click")
         validDoor = False
+        direction = None
         x = btn['xpos']
         y = btn['ypos']
-        if x == 0 and y <= self.roomSize['y']: #West wall,
-            print("WEST WALL")
-            validDoor = True
+        #TODO Currently corners aren't handled.  Simply prioritizeds verticle travel.
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL")
             validDoor = True
-        if x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
-            print("EAST WALL")
-            validDoor = True
-        if y == self.roomSize['y'] and x <= self.roomSize['x']: #South wall,
+            direction = 0
+        elif y == self.roomSize['y'] and x <= self.roomSize['x']: #South wall,
             print("SOUTH WALL")
+            validDoor = True
+            direction = 0
+        elif x == 0 and y <= self.roomSize['y']: #West wall,
+            print("WEST WALL")
+            validDoor = True
+        elif x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
+            print("EAST WALL")
             validDoor = True
 
         if validDoor:
             if self.currDoor is not None: #if door already selected, delete prev selection.
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['selected'], batch=False)
-            self.currDoor = {'x':x,'y':y,}
+                self.currDoor = dict({})
+            self.currDoor = {'x':x,'y':y,'direction':direction}
             self.updateIcons(x, y, self.icons['white'], batch=False)
 
     def updateIcons(self, x, y, icon, batch=True):
