@@ -137,6 +137,7 @@ class LayoutGenerator(tk.Tk):
             print(self.currDoor)
 
     def updateIcons(self, x, y, icon, batch=True):
+        print("Updating Icons:",x, y)
         if batch == True:
             for i in range(y+1):
                 for j in range(x+1):
