@@ -27,6 +27,7 @@ class LayoutGenerator(tk.Tk):
         self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
         self.roomSize = {'x':0, 'y':0}
         self.currDoor = None
+        self.allDoors = []
         self.screenSetup()
         
     def makeButtonGrid(self, size, frame):
@@ -151,7 +152,6 @@ class LayoutGenerator(tk.Tk):
             currBtn['button'].configure(image=icon)
             currBtn['button'].image = icon
 
-        
     def clearSize(self):
         #Resets all icons on grid and sets room size to 0.
         self.updateIcons(self.roomSize['x'], self.roomSize['y'], self.icons['default'])
@@ -161,7 +161,9 @@ class LayoutGenerator(tk.Tk):
     def confirmRoom(self):
         r = Room(roomSize=self.roomSize)
         print(r)
-        #print(self.btns)
+
+    def confirmDoor(self):
+        self.allDoors.append(self.currDoor)
 
 a = LayoutGenerator()
 a.mainloop()
