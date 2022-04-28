@@ -73,7 +73,7 @@ class LayoutGenerator(tk.Tk):
         controlsFrame.grid(row=0, column=0)
         btnHeight, btnWidth = 5, 10
         sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size',  command=None)
-        doorConfirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Door\nConfirm', command=None)
+        doorConfirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Door\nConfirm', command=self.confirmDoor)
         confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=self.confirmRoom)
 
         sizeBtn.grid(row=0, column=0)
@@ -154,16 +154,22 @@ class LayoutGenerator(tk.Tk):
 
     def clearSize(self):
         #Resets all icons on grid and sets room size to 0.
+        self.currDoor = None
         self.updateIcons(self.roomSize['x'], self.roomSize['y'], self.icons['default'])
         self.roomSize['x'] = 0
         self.roomSize['y'] = 0
 
     def confirmRoom(self):
+        #TODO Check if valid room before creation.
         r = Room(roomSize=self.roomSize)
         print(r)
 
     def confirmDoor(self):
-        self.allDoors.append(self.currDoor)
+        if self.currDoor != None:
+            for i in self.allDoors:
+                #Check if wall already contains a door.
+                pass
+            self.allDoors.append(self.currDoor)
 
 a = LayoutGenerator()
 a.mainloop()
