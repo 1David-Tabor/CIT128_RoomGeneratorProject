@@ -182,23 +182,19 @@ class LayoutGenerator(tk.Tk):
             else:
                 for i in self.allDoors:
 #If both doors are updown doors and have the same Y coordinate then they must be on the same wall.
-                    if i['direction'] == 0 and i['y'] == self.currDoor['y'] or i['direction'] == 0 and i['y'] == 0:
+                    if i['direction'] == 0 and i['y'] == self.currDoor['y']:
                         tmp = [i['x'], i['y']]
                         i['x'] = self.currDoor['x']
                         i['y'] = self.currDoor['y']
                         self.updateIcons(tmp[0], tmp[1], self.icons['selected'], batch=False, updateDoors=True)
-
-                        return
-                    if i['direction'] == 1 and i['x'] == self.currDoor['x'] or i['direction'] == 0 and i['x'] == 0:
+                    elif i['direction'] == 1 and i['x'] == self.currDoor['x']:
                         tmp = [i['x'], i['y']]
                         i['x'] = self.currDoor['x']
                         i['y'] = self.currDoor['y']
                         self.updateIcons(tmp[0], tmp[1], self.icons['selected'], batch=False, updateDoors=True)
-
                     else: 
                         self.allDoors.append(self.currDoor)
                         self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
-                        return
 
 a = LayoutGenerator()
 a.mainloop()
