@@ -134,13 +134,13 @@ class LayoutGenerator(tk.Tk):
 
         if validDoor:
             if self.currDoor is not None: #if door already selected, delete prev selection.
-                self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['selected'], batch=False, allDoors=True)
+                self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['selected'], batch=False, updateDoors=True)
                 self.currDoor = dict({})
             self.currDoor = {'x':x,'y':y,'direction':direction}
             self.updateIcons(x, y, self.icons['white'], batch=False)
             print(self.currDoor)
 
-    def updateIcons(self, x, y, icon, batch=True, allDoors=False):
+    def updateIcons(self, x, y, icon, batch=True, updateDoors=False):
         print("Updating Icons:",x, y) # DELETE
         if batch == True:
             for i in range(y+1):
@@ -152,7 +152,7 @@ class LayoutGenerator(tk.Tk):
             currBtn = self.btns[y][x]
             currBtn['button'].configure(image=icon)
             currBtn['button'].image = icon
-        if allDoors:
+        if updateDoors:
             for i in self.allDoors:
                 currBtn = self.btns[i['y']][i['x']]
                 currBtn['button'].configure(image=self.icons['door'])
@@ -174,7 +174,7 @@ class LayoutGenerator(tk.Tk):
 
     def confirmDoor(self):
         if self.currDoor != None:
-            if not self.allDoors:
+            if self.allDoors == []:
                 self.allDoors.append(self.currDoor)
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
                 print("Door created...") # DELETE
@@ -182,18 +182,23 @@ class LayoutGenerator(tk.Tk):
             else:
                 for i in self.allDoors:
 #If both doors are updown doors and have the same Y coordinate then they must be on the same wall.
-                    if i['direction'] == 0 and i['y'] == self.currDoor['y']:
-                        print("Same wall, vertical") # DELETE
+                    if i['direction'] == 0 and i['y'] == self.currDoor['y'] or i['direction'] == 0 and i['y'] == 0:
+                        tmp = [i['x'], i['y']]
+                        i['x'] = self.currDoor['x']
+                        i['y'] = self.currDoor['y']
+                        self.updateIcons(tmp[0], tmp[1], self.icons['selected'], batch=False, updateDoors=True)
+
                         return
-                    if i['direction'] == 1 and i['x'] == self.currDoor['x']:
-                        print("Same wall, horizontal") # DELETE
-                        return
+                    if i['direction'] == 1 and i['x'] == self.currDoor['x'] or i['direction'] == 0 and i['x'] == 0:
+                        tmp = [i['x'], i['y']]
+                        i['x'] = self.currDoor['x']
+                        i['y'] = self.currDoor['y']
+                        self.updateIcons(tmp[0], tmp[1], self.icons['selected'], batch=False, updateDoors=True)
+
                     else: 
-                        print("Door created...")
                         self.allDoors.append(self.currDoor)
                         self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
                         return
 
 a = LayoutGenerator()
 a.mainloop()
-
