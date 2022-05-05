@@ -154,6 +154,7 @@ class LayoutGenerator(tk.Tk):
 
     def clearSize(self):
         #Resets all icons on grid and sets room size to 0.
+        self.allDoors = []
         self.currDoor = None
         self.updateIcons(self.roomSize['x'], self.roomSize['y'], self.icons['default'])
         self.roomSize['x'] = 0
@@ -167,11 +168,23 @@ class LayoutGenerator(tk.Tk):
 
     def confirmDoor(self):
         if self.currDoor != None:
-            for i in self.allDoors:
-                #TODO
-                #Check if wall already contains a door.
-                pass
-            self.allDoors.append(self.currDoor)
+            if not self.allDoors:
+                self.allDoors.append(self.currDoor)
+                print("Door created...") # DELETE
+                print(self.allDoors) # DELETE
+            else:
+                for i in self.allDoors:
+#If both doors are updown doors and have the same Y coordinate then they must be on the same wall.
+                    if i['direction'] == 0 and i['y'] == self.currDoor['y']:
+                        print("Same wall, vertical") # DELETE
+                        return
+                    if i['direction'] == 1 and i['x'] == self.currDoor['x']:
+                        print("Same wall, horizontal") # DELETE
+                        return
+                    else: 
+                        print("Door created...")
+                        self.allDoors.append(self.currDoor)
+                        return
 
 a = LayoutGenerator()
 a.mainloop()
