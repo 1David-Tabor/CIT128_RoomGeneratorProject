@@ -180,19 +180,19 @@ class LayoutGenerator(tk.Tk):
                 print("Door created...") # DELETE
                 print(self.allDoors) # DELETE
             else:
-                for i in self.allDoors: #TODO Improper looping. 
+                for i in self.allDoors:
 #If both doors are updown doors and have the same Y coordinate then they must be on the same wall.
-                    if i['direction'] == 0 and i['y'] == self.currDoor['y']:
+                    if self.currDoor['direction'] == 0 and i['y'] == self.currDoor['y']:
                         tmp = [i['x'], i['y']]
                         i['x'] = self.currDoor['x']
                         i['y'] = self.currDoor['y']
                         self.updateIcons(tmp[0], tmp[1], self.icons['selected'], batch=False, updateDoors=True)
-                    elif i['direction'] == 1 and i['x'] == self.currDoor['x']:
+                    elif self.currDoor['direction'] == 1 and i['x'] == self.currDoor['x']:
                         tmp = [i['x'], i['y']]
                         i['x'] = self.currDoor['x']
                         i['y'] = self.currDoor['y']
                         self.updateIcons(tmp[0], tmp[1], self.icons['selected'], batch=False, updateDoors=True)
-                    else:
+                    else: 
                         self.allDoors.append(self.currDoor)
                         self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
 
