@@ -134,13 +134,13 @@ class LayoutGenerator(tk.Tk):
 
         if validDoor:
             if self.currDoor is not None: #if door already selected, delete prev selection.
-                self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['selected'], batch=False)
+                self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['selected'], batch=False, allDoors=True)
                 self.currDoor = dict({})
             self.currDoor = {'x':x,'y':y,'direction':direction}
             self.updateIcons(x, y, self.icons['white'], batch=False)
             print(self.currDoor)
 
-    def updateIcons(self, x, y, icon, batch=True):
+    def updateIcons(self, x, y, icon, batch=True, allDoors=False):
         print("Updating Icons:",x, y) # DELETE
         if batch == True:
             for i in range(y+1):
@@ -152,6 +152,11 @@ class LayoutGenerator(tk.Tk):
             currBtn = self.btns[y][x]
             currBtn['button'].configure(image=icon)
             currBtn['button'].image = icon
+        if allDoors:
+            for i in self.allDoors:
+                currBtn = self.btns[i['y']][i['x']]
+                currBtn['button'].configure(image=self.icons['door'])
+                currBtn['button'].image = self.icons['door']
 
     def clearSize(self):
         #Resets all icons on grid and sets room size to 0.
@@ -187,7 +192,6 @@ class LayoutGenerator(tk.Tk):
                         print("Door created...")
                         self.allDoors.append(self.currDoor)
                         self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
-
                         return
 
 a = LayoutGenerator()
