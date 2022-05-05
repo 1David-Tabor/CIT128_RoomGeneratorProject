@@ -34,7 +34,8 @@ class LayoutGenerator(tk.Tk):
         self.icons = {
             'default'  : PhotoImage(file='images/tanbox.png'),
             'white'    : PhotoImage(file='images/image2.png'),
-            'selected' : PhotoImage(file='images/redbox.png')
+            'selected' : PhotoImage(file='images/redbox.png'),
+            'door' : PhotoImage(file='images/door.png')
         }
         for i in range(size):
             for j in range(size):
@@ -170,6 +171,7 @@ class LayoutGenerator(tk.Tk):
         if self.currDoor != None:
             if not self.allDoors:
                 self.allDoors.append(self.currDoor)
+                self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
                 print("Door created...") # DELETE
                 print(self.allDoors) # DELETE
             else:
@@ -184,6 +186,8 @@ class LayoutGenerator(tk.Tk):
                     else: 
                         print("Door created...")
                         self.allDoors.append(self.currDoor)
+                        self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
+
                         return
 
 a = LayoutGenerator()
