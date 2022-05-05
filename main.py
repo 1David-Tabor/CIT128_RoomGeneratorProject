@@ -160,13 +160,15 @@ class LayoutGenerator(tk.Tk):
         self.roomSize['y'] = 0
 
     def confirmRoom(self):
-        #TODO Check if valid room before creation.
-        r = Room(roomSize=self.roomSize)
-        print(r)
+        if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) < 0:
+            r = Room(roomSize=self.roomSize)
+            print("Room Successfully created.") 
+        else: print("Room creation error")
 
     def confirmDoor(self):
         if self.currDoor != None:
             for i in self.allDoors:
+                #TODO
                 #Check if wall already contains a door.
                 pass
             self.allDoors.append(self.currDoor)
