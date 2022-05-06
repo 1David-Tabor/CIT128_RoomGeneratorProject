@@ -18,7 +18,19 @@ class Room:
         self.doors = doorPositions
         print('room created of size:', self.roomSize)
         print('doors located at:', self.doors)
-        #self.doorLocations = doorLocations
+    
+    def draw(self):
+        xSize = self.roomSize['x'] + 1
+        ySize = self.roomSize['y'] + 1
+        pixelsPerTile = 50
+        img = Image.new('RGB', (xSize*pixelsPerTile, ySize*pixelsPerTile), (125, 125, 125))
+        draw = ImageDraw.Draw(img)
+        for i in range(0, pixelsPerTile*xSize, pixelsPerTile ):
+            for j in range(0, ySize*pixelsPerTile, pixelsPerTile):
+                print(i, j)
+                shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
+                draw.rectangle(shape, fill='#ff785a', outline='black')
+        img.show()
 
 # Main app window
 class LayoutGenerator(tk.Tk):
@@ -173,6 +185,7 @@ class LayoutGenerator(tk.Tk):
     def confirmRoom(self):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
             r = Room(roomSize=self.roomSize, doorPositions=self.allDoors)
+            r.draw()
 
     def confirmDoor(self):
         if self.currDoor != None:
