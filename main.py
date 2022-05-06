@@ -96,8 +96,13 @@ class LayoutGenerator(tk.Tk):
         tabs.add(outputFrame, text='Output')
         tabs.add(helpFrame, text='Help')
 
+        inputFrameL = Frame(inputFrame, width=self.screenWidth, height=self.screenHeight)
+        inputFrameR = Frame(inputFrame, width=self.screenWidth, height=self.screenHeight)
+        inputFrameL.grid(column=0, row=0)
+        inputFrameR.grid(column=1, row=0)
+        
         # Quadrant 1: Size, Door placement, and Confirm buttons.
-        controlsFrame = Frame(inputFrame, padx=5, pady=5)
+        controlsFrame = Frame(inputFrameL, padx=5, pady=5)
         controlsFrame.grid(row=0, column=0)
         btnHeight, btnWidth = 5, 10
         sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size',  command=self.debugMethod)
@@ -108,14 +113,14 @@ class LayoutGenerator(tk.Tk):
         confirmBtn.grid(row=0, column=2)
 
         # Quadrant 3: room editing grid.
-        gridFrame = Frame(inputFrame, padx=5, pady=5)
+        gridFrame = Frame(inputFrameL, padx=5, pady=5)
         gridFrame.grid(row=1, column=0)
         gridSize = 5
         self.makeButtonGrid(gridSize, gridFrame)
         
         # Quadrants 2 & 4: Room viewer.
-        self.viewFrame = Frame(inputFrame, padx=5, pady=5)
-        self.viewFrame.grid(row=0, column=1)
+        self.viewFrame = Frame(inputFrameR, padx=5, pady=5)
+        self.viewFrame.grid(row=0, column=0)
         #label = Label(viewFrame, image=)
 
     def debugMethod(self):
@@ -197,6 +202,7 @@ class LayoutGenerator(tk.Tk):
     
     def updateViewFrame(self):
         for i in range(len(self.allRooms)):
+            print(self.allRooms)
             img = self.allRooms[i].draw()
             label = Label(self.viewFrame, image=img)
             label.image = img
