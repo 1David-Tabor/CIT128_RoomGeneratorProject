@@ -6,6 +6,7 @@
 '''
 import tkinter as tk
 from tkinter import ttk, Frame, Button, PhotoImage
+from PIL import Image, ImageDraw
 
 BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
 BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
