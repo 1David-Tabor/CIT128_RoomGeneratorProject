@@ -38,8 +38,9 @@ class Room:
                     shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
                     color = '#ff785a'
                 draw.rectangle(shape, fill=color, outline='black')
-        img.show()
+        #img.show()
         img = ImageTk.PhotoImage(img)
+        return img
     
 
 # Main app window
@@ -52,6 +53,7 @@ class LayoutGenerator(tk.Tk):
         self.roomSize = {'x':0, 'y':0}
         self.currDoor = None
         self.allDoors = []
+        self.allRooms = []
         self.screenSetup()
         
     def makeButtonGrid(self, size, frame):
@@ -101,7 +103,6 @@ class LayoutGenerator(tk.Tk):
         sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size',  command=self.debugMethod)
         doorConfirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Door\nConfirm', command=self.confirmDoor)
         confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=self.confirmRoom)
-
         sizeBtn.grid(row=0, column=0)
         doorConfirmBtn.grid(row=0, column=1)
         confirmBtn.grid(row=0, column=2)
@@ -114,7 +115,8 @@ class LayoutGenerator(tk.Tk):
         
         # Quadrants 2 & 4: Room viewer.
         self.viewFrame = Frame(inputFrame, padx=5, pady=5)
-        self.viewFrame.grid(rowspan=2, column=1)
+        self.viewFrame.grid(row=0, column=1)
+        #label = Label(viewFrame, image=)
 
     def debugMethod(self):
         print(self.allDoors) # DELETE
@@ -192,11 +194,19 @@ class LayoutGenerator(tk.Tk):
         self.updateIcons(self.roomSize['x'], self.roomSize['y'], self.icons['default'])
         self.roomSize['x'] = 0
         self.roomSize['y'] = 0
+    
+    def updateViewFrame(self):
+        for i in range(len(self.allRooms)):
+            img = self.allRooms[i].draw()
+            label = Label(self.viewFrame, image=img)
+            label.image = img
+            label.grid(row = i)
 
     def confirmRoom(self):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
             r = Room(roomSize=self.roomSize, doorPositions=self.allDoors)
-            r.draw()
+            self.allRooms.append(r)
+            self.updateViewFrame()
 
     def confirmDoor(self):
         if self.currDoor != None:
