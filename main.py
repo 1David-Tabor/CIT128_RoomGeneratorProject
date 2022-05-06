@@ -15,22 +15,32 @@ class Room:
     """data structure to store each room."""
     def __init__(self, roomSize, doorPositions):
         self.roomSize = roomSize
-        self.doors = doorPositions
+        self.doorPositions = doorPositions
         print('room created of size:', self.roomSize)
-        print('doors located at:', self.doors)
+        print('doors located at:', self.doorPositions)
     
     def draw(self):
         xSize = self.roomSize['x'] + 1
         ySize = self.roomSize['y'] + 1
         pixelsPerTile = 50
+        doors = []
+        for i in self.doorPositions:
+            doors.append((i['x']*pixelsPerTile, i['y']*pixelsPerTile))
+        print(doors)
         img = Image.new('RGB', (xSize*pixelsPerTile, ySize*pixelsPerTile), (125, 125, 125))
         draw = ImageDraw.Draw(img)
         for i in range(0, pixelsPerTile*xSize, pixelsPerTile ):
             for j in range(0, ySize*pixelsPerTile, pixelsPerTile):
-                shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
-                draw.rectangle(shape, fill='#ff785a', outline='black')
+                if (i, j) in doors:
+                    shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
+                    color = '#187225'
+                else:
+                    shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
+                    color = '#ff785a'
+                draw.rectangle(shape, fill=color, outline='black')
         img.show()
         img = ImageTk.PhotoImage(img)
+    
 
 # Main app window
 class LayoutGenerator(tk.Tk):
