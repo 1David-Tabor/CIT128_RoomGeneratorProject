@@ -5,8 +5,8 @@
     Student Directed Project
 '''
 import tkinter as tk
-from tkinter import ttk, Frame, Button, PhotoImage
-from PIL import Image, ImageDraw
+from tkinter import ttk, Frame, Button, PhotoImage, Label
+from PIL import Image, ImageDraw, ImageTk
 
 BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
 BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
@@ -27,10 +27,10 @@ class Room:
         draw = ImageDraw.Draw(img)
         for i in range(0, pixelsPerTile*xSize, pixelsPerTile ):
             for j in range(0, ySize*pixelsPerTile, pixelsPerTile):
-                print(i, j)
                 shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
                 draw.rectangle(shape, fill='#ff785a', outline='black')
         img.show()
+        img = ImageTk.PhotoImage(img)
 
 # Main app window
 class LayoutGenerator(tk.Tk):
@@ -103,10 +103,11 @@ class LayoutGenerator(tk.Tk):
         self.makeButtonGrid(gridSize, gridFrame)
         
         # Quadrants 2 & 4: Room viewer.
-        viewFrame = Frame(inputFrame, padx=5, pady=5)
-        viewFrame.grid(rowspan=2, column=1)
+        self.viewFrame = Frame(inputFrame, padx=5, pady=5)
+        self.viewFrame.grid(rowspan=2, column=1)
+
     def debugMethod(self):
-        print(self.allDoors)
+        print(self.allDoors) # DELETE
 
     #LEFT CLICK BUTTON ACTION
     def gridButtonLeftWrapper(self, i, j): 
