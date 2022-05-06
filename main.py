@@ -16,6 +16,7 @@ class Room:
         self.roomSize = roomSize
         self.doors = doorPositions
         print('room created of size:', self.roomSize)
+        print('doors located at:', self.doors)
         #self.doorLocations = doorLocations
 
 # Main app window
@@ -74,7 +75,7 @@ class LayoutGenerator(tk.Tk):
         controlsFrame = Frame(inputFrame, padx=5, pady=5)
         controlsFrame.grid(row=0, column=0)
         btnHeight, btnWidth = 5, 10
-        sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size',  command=None)
+        sizeBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Size',  command=self.debugMethod)
         doorConfirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Door\nConfirm', command=self.confirmDoor)
         confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=self.confirmRoom)
 
@@ -91,6 +92,8 @@ class LayoutGenerator(tk.Tk):
         # Quadrants 2 & 4: Room viewer.
         viewFrame = Frame(inputFrame, padx=5, pady=5)
         viewFrame.grid(rowspan=2, column=1)
+    def debugMethod(self):
+        print(self.allDoors)
 
     #LEFT CLICK BUTTON ACTION
     def gridButtonLeftWrapper(self, i, j): 
@@ -139,7 +142,6 @@ class LayoutGenerator(tk.Tk):
                 self.currDoor = dict({})
             self.currDoor = {'x':x,'y':y,'direction':direction}
             self.updateIcons(x, y, self.icons['hl_door'], batch=False)
-            print(self.currDoor)
 
     def updateIcons(self, x, y, icon, batch=True, updateDoors=False):
         print("Updating Icons:",x, y) # DELETE
@@ -168,34 +170,31 @@ class LayoutGenerator(tk.Tk):
         self.roomSize['y'] = 0
 
     def confirmRoom(self):
-        if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) < 0:
-            r = Room(roomSize=self.roomSize)
-            print("Room Successfully created.") 
-        else: print("Room creation error")
+        if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
+            r = Room(roomSize=self.roomSize, doorPositions=self.allDoors)
 
     def confirmDoor(self):
         if self.currDoor != None:
             if self.allDoors == []:
                 self.allDoors.append(self.currDoor)
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
-                print("Door created...") # DELETE
-                print(self.allDoors) # DELETE
-            else:
-                for i in self.allDoors:
+            else: #if allDoors contains items.
+                for i in range(len(self.allDoors)):
 #If both doors are updown doors and have the same Y coordinate then they must be on the same wall.
-                    if self.currDoor['direction'] == 0 and i['y'] == self.currDoor['y']:
-                        tmp = [i['x'], i['y']]
-                        i['x'] = self.currDoor['x']
-                        i['y'] = self.currDoor['y']
-                        self.updateIcons(tmp[0], tmp[1], self.icons['selected'], batch=False, updateDoors=True)
-                    elif self.currDoor['direction'] == 1 and i['x'] == self.currDoor['x']:
-                        tmp = [i['x'], i['y']]
-                        i['x'] = self.currDoor['x']
-                        i['y'] = self.currDoor['y']
-                        self.updateIcons(tmp[0], tmp[1], self.icons['selected'], batch=False, updateDoors=True)
-                    else: 
+                    if self.currDoor['direction'] == 0 and self.allDoors[i]['y'] == self.currDoor['y']:
+                        tmpX, tmpY = self.allDoors[i]['x'], self.allDoors[i]['y']
+                        self.allDoors.pop(i)
                         self.allDoors.append(self.currDoor)
-                        self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
+                        self.updateIcons(tmpX, tmpY, self.icons['selected'], batch=False, updateDoors=True)
+                        return
+                    elif self.currDoor['direction'] == 1 and self.allDoors[i]['x'] == self.currDoor['x']:
+                        tmpX, tmpY = self.allDoors[i]['x'], self.allDoors[i]['y']
+                        self.allDoors.pop(i)
+                        self.allDoors.append(self.currDoor)
+                        self.updateIcons(tmpX, tmpY, self.icons['selected'], batch=False, updateDoors=True)
+                        return 
+                self.allDoors.append(self.currDoor)
+                self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
 
 a = LayoutGenerator()
 a.mainloop()
