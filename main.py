@@ -211,8 +211,9 @@ class LayoutGenerator(tk.Tk):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
             r = Room(roomSize=self.roomSize, doorPositions=self.allDoors)
             self.allRooms.append(r)
-            print(len(self.allRooms))
+            print(len(self.allRooms)) # DELETE
             self.updateViewFrame()
+            self.clearSize()
 
     def confirmDoor(self):
         if self.currDoor != None:
