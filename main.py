@@ -16,6 +16,7 @@ class Room:
     def __init__(self, roomSize, doorPositions):
         self.roomSize = roomSize
         self.doorPositions = doorPositions
+        self.img = self.draw()
         print('room created of size:', self.roomSize)
         print('doors located at:', self.doorPositions)
     
@@ -26,10 +27,9 @@ class Room:
         doors = []
         for i in self.doorPositions:
             doors.append((i['x']*pixelsPerTile, i['y']*pixelsPerTile))
-        print(doors)
         img = Image.new('RGB', (xSize*pixelsPerTile, ySize*pixelsPerTile), (125, 125, 125))
         draw = ImageDraw.Draw(img)
-        for i in range(0, pixelsPerTile*xSize, pixelsPerTile ):
+        for i in range(0, pixelsPerTile*xSize, pixelsPerTile):
             for j in range(0, ySize*pixelsPerTile, pixelsPerTile):
                 if (i, j) in doors:
                     shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
@@ -148,7 +148,7 @@ class LayoutGenerator(tk.Tk):
         direction = None
         x = btn['xpos']
         y = btn['ypos']
-        #TODO Currently corners aren't handled.  Simply prioritizeds vertical travel.
+        #TODO Currently corners aren't handled.  Prioritizes vertical travel.
         #Direction 0 = north south doorway.  Direction 1 = east west doorway.
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL") # DELETE
@@ -202,8 +202,7 @@ class LayoutGenerator(tk.Tk):
     
     def updateViewFrame(self):
         for i in range(len(self.allRooms)):
-            print(self.allRooms)
-            img = self.allRooms[i].draw()
+            img = self.allRooms[i].img
             label = Label(self.viewFrame, image=img)
             label.image = img
             label.grid(row = i)
@@ -212,6 +211,7 @@ class LayoutGenerator(tk.Tk):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
             r = Room(roomSize=self.roomSize, doorPositions=self.allDoors)
             self.allRooms.append(r)
+            print(len(self.allRooms))
             self.updateViewFrame()
 
     def confirmDoor(self):
