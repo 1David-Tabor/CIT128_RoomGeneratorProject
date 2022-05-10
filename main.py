@@ -57,7 +57,7 @@ class LayoutGenerator(tk.Tk):
         self.title('Layout Generator')
         self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
         self.gridSize = 5
-        self.numRooms = 12
+        self.numRooms = 5
         self.roomSize = {'x':0, 'y':0}
         self.currDoor = None
         self.allDoors = []
