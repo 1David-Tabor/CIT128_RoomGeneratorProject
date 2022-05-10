@@ -11,6 +11,13 @@ from PIL import Image, ImageDraw, ImageTk
 BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
 BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
 
+class Layout:
+    def __init__(self):
+        self.rooms = []
+        self.size = {'x':0, 'y':0}
+
+
+
 class Room:
     """data structure to store each room."""
     def __init__(self, roomSize, doorPositions):
@@ -23,11 +30,11 @@ class Room:
     def draw(self):
         xSize = self.roomSize['x'] + 1
         ySize = self.roomSize['y'] + 1
-        pixelsPerTile = 50
+        pixelsPerTile = 25
         doors = []
         for i in self.doorPositions:
             doors.append((i['x']*pixelsPerTile, i['y']*pixelsPerTile))
-        img = Image.new('RGB', (xSize*pixelsPerTile, ySize*pixelsPerTile), (125, 125, 125))
+        img = Image.new('RGB', (xSize*pixelsPerTile+1, ySize*pixelsPerTile+1), (125, 125, 125))
         draw = ImageDraw.Draw(img)
         for i in range(0, pixelsPerTile*xSize, pixelsPerTile):
             for j in range(0, ySize*pixelsPerTile, pixelsPerTile):
