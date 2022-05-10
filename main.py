@@ -17,18 +17,36 @@ class Layout:
         self.size = {'x':0, 'y':0}
 
 class Room:
-    """data structure to store each room."""
+    '''
+    Object to store a room as size and door locations.
+    
+    Parameters:
+        roomSize (dict): the 'x' and 'y' dimensions of the room.
+
+        doorPositions (dict): 'x' and 'y' coordinates of where the door is in relation
+        to the room size, and the 'direction' of the door.
+    '''
+
     def __init__(self, roomSize, doorPositions):
         self.roomSize = roomSize
         self.doorPositions = doorPositions
         self.img = self.draw()
-        print('room created of size:', self.roomSize)
-        print('doors located at:', self.doorPositions)
+        print('room created of size:', self.roomSize) # DELETE
+        print('doors located at:', self.doorPositions) # DELETE
     
     def draw(self):
+        '''
+        Creates representative image of the room and it's door positions.
+
+        Parameters:
+            None, creates image based on object properties defined in __init__. 
+
+        Returns:
+            ImageTk.PhotoImage object which can be displayed using Tkinter.
+        '''
         xSize = self.roomSize['x'] + 1
         ySize = self.roomSize['y'] + 1
-        pixelsPerTile = 25
+        pixelsPerTile = 25 #Can be modified to adjust tile size.
         doors = []
         for i in self.doorPositions:
             doors.append((i['x']*pixelsPerTile, i['y']*pixelsPerTile))
@@ -38,10 +56,10 @@ class Room:
             for j in range(0, ySize*pixelsPerTile, pixelsPerTile):
                 if (i, j) in doors: # If current coordinate is a door tile, change the color.
                     shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
-                    color = '#187225'
+                    color = '#187225' # green
                 else:
                     shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
-                    color = '#ff785a'
+                    color = '#ff785a' # red
                 draw.rectangle(shape, fill=color, outline='black')
         #img.show()
         img = ImageTk.PhotoImage(img)
