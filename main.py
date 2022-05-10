@@ -25,6 +25,9 @@ class Room:
 
         doorPositions (dict): 'x' and 'y' coordinates of where the door is in relation
         to the room size, and the 'direction' of the door.
+    
+    Methods: 
+        draw: creates representative image of the room and it's door positions.
     '''
 
     def __init__(self, roomSize, doorPositions):
@@ -61,12 +64,27 @@ class Room:
                     shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
                     color = '#ff785a' # red
                 draw.rectangle(shape, fill=color, outline='black')
-        #img.show()
         img = ImageTk.PhotoImage(img)
         return img
 
 # Main app window
 class LayoutGenerator(tk.Tk):
+    '''
+    Object to create rooms and generate layouts from permutations of the rooms.
+
+    Methods:
+        makeButtonGrid(size, frame): Creates a square grid of 'size' buttons in specified frame.
+        screenSetup(): Sets up frames, tabs, and buttons for the program.
+        gridButtonLeftWrapper(i, j): Gets button at coordinates [i][j] and passes it to gridButtonLeft.
+        gridButtonLeft(btn): Sets the size (x, y) of the room in progress.
+        gridButtonRightWrapper(i, j): Gets button at coordinates [i][j] and passes it to gridButtonRight.
+        gridButtonRight(btn): Attempts to set passed button as the current door if it would be a valid door.
+        updateIcons(x, y, icon, batch, updateDoors): Updates a set of buttons or a singular button to
+            set their image to icon.
+        clearSize(): Resets icons to default, deletes room in progress.
+        updateViewFrame(): Displays room images to the right of the grid.
+        confirmDoor(): Adds the current door to the current room. Deletes older door if there is a conflict.
+    '''
     def __init__(self):
         tk.Tk.__init__(self)
         self.btns = dict({})
