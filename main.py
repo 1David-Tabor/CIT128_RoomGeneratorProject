@@ -31,7 +31,7 @@ class Room:
         draw = ImageDraw.Draw(img)
         for i in range(0, pixelsPerTile*xSize, pixelsPerTile):
             for j in range(0, ySize*pixelsPerTile, pixelsPerTile):
-                if (i, j) in doors:
+                if (i, j) in doors: # If current coordinate is a door tile, change the color.
                     shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
                     color = '#187225'
                 else:
@@ -41,7 +41,6 @@ class Room:
         #img.show()
         img = ImageTk.PhotoImage(img)
         return img
-    
 
 # Main app window
 class LayoutGenerator(tk.Tk):
@@ -50,6 +49,8 @@ class LayoutGenerator(tk.Tk):
         self.btns = dict({})
         self.title('Layout Generator')
         self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
+        self.gridSize = 5
+        self.numRooms = 12
         self.roomSize = {'x':0, 'y':0}
         self.currDoor = None
         self.allDoors = []
@@ -115,8 +116,7 @@ class LayoutGenerator(tk.Tk):
         # Quadrant 3: room editing grid.
         gridFrame = Frame(inputFrameL, padx=5, pady=5)
         gridFrame.grid(row=1, column=0)
-        gridSize = 5
-        self.makeButtonGrid(gridSize, gridFrame)
+        self.makeButtonGrid(self.gridSize, gridFrame)
         
         # Quadrants 2 & 4: Room viewer.
         self.viewFrame = Frame(inputFrameR, padx=5, pady=5)
