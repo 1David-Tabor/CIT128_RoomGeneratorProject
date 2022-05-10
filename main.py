@@ -149,7 +149,7 @@ class LayoutGenerator(tk.Tk):
         x = btn['xpos']
         y = btn['ypos']
         #TODO Currently corners aren't handled.  Prioritizes vertical travel.
-        #Direction 0 = north south doorway.  Direction 1 = east west doorway.
+        #Directions: 0=North, 1=South, 2=East, 3=West.
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL") # DELETE
             validDoor = True
@@ -157,15 +157,15 @@ class LayoutGenerator(tk.Tk):
         elif y == self.roomSize['y'] and x <= self.roomSize['x']: #South wall,
             print("SOUTH WALL") # DELETE
             validDoor = True
-            direction = 0
+            direction = 1
         elif x == 0 and y <= self.roomSize['y']: #West wall,
             print("WEST WALL") # DELETE
             validDoor = True
-            direction = 1
+            direction = 3
         elif x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
             print("EAST WALL") # DELETE
             validDoor = True
-            direction = 1
+            direction = 2
 
         if validDoor:
             if self.currDoor is not None: #if door already selected, delete prev selection.
@@ -222,19 +222,14 @@ class LayoutGenerator(tk.Tk):
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
             else: #if allDoors contains items.
                 for i in range(len(self.allDoors)):
-#If both doors are updown doors and have the same Y coordinate then they must be on the same wall.
-                    if self.currDoor['direction'] == 0 and self.allDoors[i]['y'] == self.currDoor['y']:
+                    #Two doors with the same "direction" are always on the same wall.
+                    #When the loop finds a door on the same wall it gets replaced with the more recent door.
+                    if self.currDoor['direction'] == self.allDoors[i]['direction']:
                         tmpX, tmpY = self.allDoors[i]['x'], self.allDoors[i]['y']
                         self.allDoors.pop(i)
                         self.allDoors.append(self.currDoor)
                         self.updateIcons(tmpX, tmpY, self.icons['selected'], batch=False, updateDoors=True)
                         return
-                    elif self.currDoor['direction'] == 1 and self.allDoors[i]['x'] == self.currDoor['x']:
-                        tmpX, tmpY = self.allDoors[i]['x'], self.allDoors[i]['y']
-                        self.allDoors.pop(i)
-                        self.allDoors.append(self.currDoor)
-                        self.updateIcons(tmpX, tmpY, self.icons['selected'], batch=False, updateDoors=True)
-                        return 
                 self.allDoors.append(self.currDoor)
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
 
