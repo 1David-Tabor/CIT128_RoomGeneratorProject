@@ -11,6 +11,13 @@ from PIL import Image, ImageDraw, ImageTk
 BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
 BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
 
+class Layout:
+    def __init__(self):
+        self.rooms = []
+        self.size = {'x':0, 'y':0}
+
+
+
 class Room:
     """data structure to store each room."""
     def __init__(self, roomSize, doorPositions):
@@ -23,11 +30,11 @@ class Room:
     def draw(self):
         xSize = self.roomSize['x'] + 1
         ySize = self.roomSize['y'] + 1
-        pixelsPerTile = 50
+        pixelsPerTile = 25
         doors = []
         for i in self.doorPositions:
             doors.append((i['x']*pixelsPerTile, i['y']*pixelsPerTile))
-        img = Image.new('RGB', (xSize*pixelsPerTile, ySize*pixelsPerTile), (125, 125, 125))
+        img = Image.new('RGB', (xSize*pixelsPerTile+1, ySize*pixelsPerTile+1), (125, 125, 125))
         draw = ImageDraw.Draw(img)
         for i in range(0, pixelsPerTile*xSize, pixelsPerTile):
             for j in range(0, ySize*pixelsPerTile, pixelsPerTile):
@@ -50,7 +57,7 @@ class LayoutGenerator(tk.Tk):
         self.title('Layout Generator')
         self.winSizeMulti = 0.5 # 0.25 for 1/4 screen, 0.5 for 1/2 screen, etc.
         self.gridSize = 5
-        self.numRooms = 12
+        self.numRooms = 5
         self.roomSize = {'x':0, 'y':0}
         self.currDoor = None
         self.allDoors = []
@@ -149,7 +156,7 @@ class LayoutGenerator(tk.Tk):
         x = btn['xpos']
         y = btn['ypos']
         #TODO Currently corners aren't handled.  Prioritizes vertical travel.
-        #Direction 0 = north south doorway.  Direction 1 = east west doorway.
+        #Directions: 0=North, 1=South, 2=East, 3=West.
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL") # DELETE
             validDoor = True
@@ -157,15 +164,15 @@ class LayoutGenerator(tk.Tk):
         elif y == self.roomSize['y'] and x <= self.roomSize['x']: #South wall,
             print("SOUTH WALL") # DELETE
             validDoor = True
-            direction = 0
+            direction = 1
         elif x == 0 and y <= self.roomSize['y']: #West wall,
             print("WEST WALL") # DELETE
             validDoor = True
-            direction = 1
+            direction = 3
         elif x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
             print("EAST WALL") # DELETE
             validDoor = True
-            direction = 1
+            direction = 2
 
         if validDoor:
             if self.currDoor is not None: #if door already selected, delete prev selection.
@@ -222,19 +229,14 @@ class LayoutGenerator(tk.Tk):
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
             else: #if allDoors contains items.
                 for i in range(len(self.allDoors)):
-#If both doors are updown doors and have the same Y coordinate then they must be on the same wall.
-                    if self.currDoor['direction'] == 0 and self.allDoors[i]['y'] == self.currDoor['y']:
+                    #Two doors with the same "direction" are always on the same wall.
+                    #When the loop finds a door on the same wall it gets replaced with the more recent door.
+                    if self.currDoor['direction'] == self.allDoors[i]['direction']:
                         tmpX, tmpY = self.allDoors[i]['x'], self.allDoors[i]['y']
                         self.allDoors.pop(i)
                         self.allDoors.append(self.currDoor)
                         self.updateIcons(tmpX, tmpY, self.icons['selected'], batch=False, updateDoors=True)
                         return
-                    elif self.currDoor['direction'] == 1 and self.allDoors[i]['x'] == self.currDoor['x']:
-                        tmpX, tmpY = self.allDoors[i]['x'], self.allDoors[i]['y']
-                        self.allDoors.pop(i)
-                        self.allDoors.append(self.currDoor)
-                        self.updateIcons(tmpX, tmpY, self.icons['selected'], batch=False, updateDoors=True)
-                        return 
                 self.allDoors.append(self.currDoor)
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
 
