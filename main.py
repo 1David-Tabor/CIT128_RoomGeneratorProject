@@ -16,8 +16,6 @@ class Layout:
         self.rooms = []
         self.size = {'x':0, 'y':0}
 
-
-
 class Room:
     """data structure to store each room."""
     def __init__(self, roomSize, doorPositions):
@@ -104,6 +102,7 @@ class LayoutGenerator(tk.Tk):
         tabs.add(outputFrame, text='Output')
         tabs.add(helpFrame, text='Help')
 
+        # Input Frame Setup
         inputFrameL = Frame(inputFrame, width=self.screenWidth, height=self.screenHeight)
         inputFrameR = Frame(inputFrame, width=self.screenWidth, height=self.screenHeight)
         inputFrameL.grid(column=0, row=0)
@@ -128,9 +127,13 @@ class LayoutGenerator(tk.Tk):
         # Quadrants 2 & 4: Room viewer.
         self.viewFrame = Frame(inputFrameR, padx=5, pady=5)
         self.viewFrame.grid(row=0, column=0)
-        #label = Label(viewFrame, image=)
+
+        # Output Frame Setup
+        permutationBtn = Button(outputFrame, height=btnHeight, width=btnWidth, text='Permute',  command=self.debugMethod)
+        permutationBtn.grid(row=0, column=0)
 
     def debugMethod(self):
+        print("Button Works")
         print(self.allDoors) # DELETE
 
     #LEFT CLICK BUTTON ACTION
