@@ -165,12 +165,13 @@ class LayoutGenerator(tk.Tk):
         self.viewFrame.grid(row=0, column=0)
 
         # Output Frame Setup
-        permutationBtn = Button(outputFrame, height=btnHeight, width=btnWidth, text='Permute',  command=self.debugMethod)
+        permutationBtn = Button(outputFrame, height=btnHeight, width=btnWidth, text='Permute',  command=self.permutateRooms)
         permutationBtn.grid(row=0, column=0)
 
     def debugMethod(self):
+        for i in self.allRooms:
+            print(i.roomSize)
         print("Button Works")
-        print(self.allDoors) # DELETE
 
     #LEFT CLICK BUTTON ACTION
     def gridButtonLeftWrapper(self, i, j): 
@@ -255,11 +256,12 @@ class LayoutGenerator(tk.Tk):
 
     def confirmRoom(self):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
-            r = Room(roomSize=self.roomSize, doorPositions=self.allDoors)
+            r = Room(roomSize=dict(self.roomSize), doorPositions=self.allDoors)
             self.allRooms.append(r)
-            print(len(self.allRooms)) # DELETE
+            print(r.roomSize)
             self.updateViewFrame()
             self.clearSize()
+            print(r.roomSize)
 
     def confirmDoor(self):
         if self.currDoor != None:
@@ -278,6 +280,18 @@ class LayoutGenerator(tk.Tk):
                         return
                 self.allDoors.append(self.currDoor)
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
+    
+    def permutateRooms(self):
+        gridSize = 0
+        max_X = 0
+        max_Y = 0
+        for i in self.allRooms:
+            print(i.roomSize)
+            max_X += i.roomSize['x']
+            max_Y += i.roomSize['y']
+        print("Maxes:",max_X, max_Y)
+
+        Python_2D_list = [[0 for j in range(gridSize)]for i in range(gridSize)]
 
 a = LayoutGenerator()
 a.mainloop()
