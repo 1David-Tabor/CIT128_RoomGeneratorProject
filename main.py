@@ -258,10 +258,8 @@ class LayoutGenerator(tk.Tk):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
             r = Room(roomSize=dict(self.roomSize), doorPositions=self.allDoors)
             self.allRooms.append(r)
-            print(r.roomSize)
             self.updateViewFrame()
             self.clearSize()
-            print(r.roomSize)
 
     def confirmDoor(self):
         if self.currDoor != None:
@@ -282,16 +280,28 @@ class LayoutGenerator(tk.Tk):
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
     
     def permutateRooms(self):
-        gridSize = 0
+        def permutations(roomlist, current_door):
+            #list of rooms remaining.
+            for room in roomlist:
+                if room.doorPositions[]:
+                    pass
+                
         max_X = 0
         max_Y = 0
         for i in self.allRooms:
             print(i.roomSize)
-            max_X += i.roomSize['x']
-            max_Y += i.roomSize['y']
-        print("Maxes:",max_X, max_Y)
+            max_X += (i.roomSize['x'] + 1)
+            max_Y += (i.roomSize['y'] + 1)
+        gridSizeX = 2 * max_X
+        gridSizeY = 2 * max_Y
+        permGrid = [['0' for j in range(gridSizeX)]for i in range(gridSizeY)]
+        for i in self.allRooms:
+            for j in i.doorPositions:
+                copy = list(self.allRooms)
+                copy.remove(i)
+                permutations(copy, j)
 
-        Python_2D_list = [[0 for j in range(gridSize)]for i in range(gridSize)]
+                
 
 a = LayoutGenerator()
 a.mainloop()
