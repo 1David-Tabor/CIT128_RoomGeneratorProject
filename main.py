@@ -280,11 +280,14 @@ class LayoutGenerator(tk.Tk):
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
     
     def permutateRooms(self):
-        def permutations(roomlist, current_door):
-            #list of rooms remaining.
-            for room in roomlist:
-                if room.doorPositions[]:
-                    pass
+        def permutations(roomlist, current_door, path):
+            if len(roomlist) != 0:
+                #list of rooms remaining.
+                for room in roomlist:
+                    for door in room.doorPositions:
+                        doorMath = current_door['direction'] - door['direction']
+                        if doorMath == 1 or doorMath == -1:
+                            pass
                 
         max_X = 0
         max_Y = 0
