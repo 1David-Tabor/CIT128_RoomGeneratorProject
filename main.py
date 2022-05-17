@@ -41,6 +41,13 @@ class Room:
         self.img = self.draw()
         print('room created of size:', self.roomSize) # DELETE
         print('doors located at:', self.doorPositions) # DELETE
+
+    def print(self):
+        print(f'\nRoomsize: {self.roomSize}')
+        for i in self.doorPositions:
+            print(f'Door: x:{i.xpos}, y:{i.ypos}')
+        print('\n')
+
     
     def draw(self):
         '''
@@ -77,6 +84,7 @@ class Door:
         self.xpos = x
         self.ypos = y
         self.direction = direction
+        self.parent = None
 
 # Main app window
 class LayoutGenerator(tk.Tk):
@@ -193,9 +201,14 @@ class LayoutGenerator(tk.Tk):
                         for doorj in rowj:
                             if self.doorMath(doori, doorj):
                                 doorset = (doori, doorj)
-                                validPairs.add(doorset)
+                                validPairs.add(frozenset(doorset))
+        tmp = []
         for i in validPairs:
-            print(i[0].direction, i[1].direction)
+            mt = tuple(i)
+            tmp.append(mt)
+        validPairs = tmp
+        for i in validPairs:
+            print(i[0].direction, i[1].direction, 'UwU')
 
     def doorMath(self, door1, door2):
         if abs(door1.direction) - abs(door2.direction) == 1:
@@ -292,6 +305,8 @@ class LayoutGenerator(tk.Tk):
     def confirmRoom(self):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
             r = Room(roomSize=dict(self.roomSize), doorPositions=self.allDoors)
+            for i in r.doorPositions:
+                i.parent = r # adding reference to parent.
             self.allRooms.append(r)
             r.roomIndex = len(self.allRooms) - 1
             self.updateViewFrame()
