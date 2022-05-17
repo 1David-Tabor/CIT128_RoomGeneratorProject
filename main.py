@@ -11,6 +11,11 @@ from PIL import Image, ImageDraw, ImageTk
 BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
 BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
 
+def abs(val):
+    if val < 0:
+        return val * (-1)
+    else: return val
+
 class Layout:
     def __init__(self):
         self.rooms = []
@@ -52,7 +57,7 @@ class Room:
         pixelsPerTile = 25 #Can be modified to adjust tile size.
         doors = []
         for i in self.doorPositions:
-            doors.append((i['x']*pixelsPerTile, i['y']*pixelsPerTile))
+            doors.append((i.xpos*pixelsPerTile, i.ypos*pixelsPerTile))
         img = Image.new('RGB', (xSize*pixelsPerTile+1, ySize*pixelsPerTile+1), (125, 125, 125))
         draw = ImageDraw.Draw(img)
         for i in range(0, pixelsPerTile*xSize, pixelsPerTile):
@@ -66,6 +71,12 @@ class Room:
                 draw.rectangle(shape, fill=color, outline='black')
         img = ImageTk.PhotoImage(img)
         return img
+
+class Door:
+    def __init__(self, x, y, direction):
+        self.xpos = x
+        self.ypos = y
+        self.direction = direction
 
 # Main app window
 class LayoutGenerator(tk.Tk):
@@ -168,6 +179,30 @@ class LayoutGenerator(tk.Tk):
         permutationBtn = Button(outputFrame, height=btnHeight, width=btnWidth, text='Permute',  command=self.permutateRooms)
         permutationBtn.grid(row=0, column=0)
 
+    def permutateRooms(self):
+        doorList = []
+        validPairs = set()
+        for i in self.allRooms:
+            doorList.append(i.doorPositions)
+        for rowi in doorList:
+            for doori in rowi: 
+                for rowj in doorList:
+                    if rowj == rowi:
+                        continue
+                    else:
+                        for doorj in rowj:
+                            if self.doorMath(doori, doorj):
+                                doorset = (doori, doorj)
+                                validPairs.add(doorset)
+        for i in validPairs:
+            print(i[0].direction, i[1].direction)
+
+    def doorMath(self, door1, door2):
+        if abs(door1.direction) - abs(door2.direction) == 1:
+            return True
+        else:
+            return False
+
     def debugMethod(self):
         for i in self.allRooms:
             print(i.roomSize)
@@ -196,7 +231,7 @@ class LayoutGenerator(tk.Tk):
         x = btn['xpos']
         y = btn['ypos']
         #TODO Currently corners aren't handled.  Prioritizes vertical travel.
-        #Directions: 0=North, 1=South, 2=East, 3=West.
+        #Directions: 0=North, 1=South, 4=East, 3=West.
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL") # DELETE
             validDoor = True
@@ -212,7 +247,7 @@ class LayoutGenerator(tk.Tk):
         elif x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
             print("EAST WALL") # DELETE
             validDoor = True
-            direction = 2
+            direction = 4
 
         if validDoor:
             if self.currDoor is not None: #if door already selected, delete prev selection.
@@ -235,7 +270,7 @@ class LayoutGenerator(tk.Tk):
             currBtn['button'].image = icon
         if updateDoors:
             for i in self.allDoors:
-                currBtn = self.btns[i['y']][i['x']]
+                currBtn = self.btns[i.ypos][i.xpos]
                 currBtn['button'].configure(image=self.icons['door'])
                 currBtn['button'].image = self.icons['door']
 
@@ -258,53 +293,28 @@ class LayoutGenerator(tk.Tk):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
             r = Room(roomSize=dict(self.roomSize), doorPositions=self.allDoors)
             self.allRooms.append(r)
+            r.roomIndex = len(self.allRooms) - 1
             self.updateViewFrame()
             self.clearSize()
 
     def confirmDoor(self):
         if self.currDoor != None:
+            door = Door(self.currDoor['x'], self.currDoor['y'], self.currDoor['direction'])
             if self.allDoors == []:
-                self.allDoors.append(self.currDoor)
+                self.allDoors.append(door)
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
             else: #if allDoors contains items.
                 for i in range(len(self.allDoors)):
                     #Two doors with the same "direction" are always on the same wall.
                     #When the loop finds a door on the same wall it gets replaced with the more recent door.
-                    if self.currDoor['direction'] == self.allDoors[i]['direction']:
-                        tmpX, tmpY = self.allDoors[i]['x'], self.allDoors[i]['y']
+                    if self.currDoor['direction'] == self.allDoors[i].direction:
+                        tmpX, tmpY = self.allDoors[i].xpos, self.allDoors[i].ypos
                         self.allDoors.pop(i)
-                        self.allDoors.append(self.currDoor)
+                        self.allDoors.append(door)
                         self.updateIcons(tmpX, tmpY, self.icons['selected'], batch=False, updateDoors=True)
                         return
-                self.allDoors.append(self.currDoor)
+                self.allDoors.append(door)
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
-    
-    def permutateRooms(self):
-        def permutations(roomlist, current_door, path):
-            if len(roomlist) != 0:
-                #list of rooms remaining.
-                for room in roomlist:
-                    for door in room.doorPositions:
-                        doorMath = current_door['direction'] - door['direction']
-                        if doorMath == 1 or doorMath == -1:
-                            pass
-                
-        max_X = 0
-        max_Y = 0
-        for i in self.allRooms:
-            print(i.roomSize)
-            max_X += (i.roomSize['x'] + 1)
-            max_Y += (i.roomSize['y'] + 1)
-        gridSizeX = 2 * max_X
-        gridSizeY = 2 * max_Y
-        permGrid = [['0' for j in range(gridSizeX)]for i in range(gridSizeY)]
-        for i in self.allRooms:
-            for j in i.doorPositions:
-                copy = list(self.allRooms)
-                copy.remove(i)
-                permutations(copy, j)
-
-                
 
 a = LayoutGenerator()
 a.mainloop()
