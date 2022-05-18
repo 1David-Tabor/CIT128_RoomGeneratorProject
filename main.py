@@ -210,9 +210,17 @@ class LayoutGenerator(tk.Tk):
         for i in validPairs:
             print(f'Room {i[0].parent.roomIndex}, Door {i[0].direction} : Room {i[1].parent.roomIndex}, Door {i[1].direction}') # DELETE
         validPairs = self.removeBadPairs(validPairs, validPairs[0])
-        print("RM BD PRS") # DELETE
         for i in validPairs:
             print(f'Room {i[0].parent.roomIndex}, Door {i[0].direction} : Room {i[1].parent.roomIndex}, Door {i[1].direction}') # DELETE
+        run = []
+        for i in range(len(self.allRooms)):
+            run.append(validPairs[i])
+            validPairs = self.removeBadPairs(validPairs, run[-1])
+        print("Run")
+        for i in run:
+            print(f'Room {i[0].parent.roomIndex}, Door {i[0].direction} : Room {i[1].parent.roomIndex}, Door {i[1].direction}') # DELETE
+
+
 
     def removeBadPairs(self, pairlist, pair):
         parentA = pair[0].parent
