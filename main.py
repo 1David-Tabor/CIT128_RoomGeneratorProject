@@ -208,8 +208,27 @@ class LayoutGenerator(tk.Tk):
             tmp.append(mt)
         validPairs = tmp
         for i in validPairs:
-            print(i[0].direction, i[1].direction, 'UwU')
+            print(f'Room {i[0].parent.roomIndex}, Door {i[0].direction} : Room {i[1].parent.roomIndex}, Door {i[1].direction}') # DELETE
+        validPairs = self.removeBadPairs(validPairs, validPairs[0])
+        print("RM BD PRS") # DELETE
+        for i in validPairs:
+            print(f'Room {i[0].parent.roomIndex}, Door {i[0].direction} : Room {i[1].parent.roomIndex}, Door {i[1].direction}') # DELETE
 
+    def removeBadPairs(self, pairlist, pair):
+        parentA = pair[0].parent
+        parentB = pair[1].parent 
+        tmplist = pairlist
+        for currPair in tmplist: 
+            if currPair == pair:
+                continue
+            elif currPair[0] == pair[0] or currPair[0] == pair[1] or currPair[1] == pair[0] or currPair[1] == pair[1]:
+                tmplist.remove(currPair)
+            elif parentA == currPair[0].parent and parentB == currPair[1].parent:
+                tmplist.remove(currPair)
+            elif parentA == currPair[1].parent and parentB == currPair[0].parent:
+                tmplist.remove(currPair)
+        return tmplist
+    
     def doorMath(self, door1, door2):
         if abs(door1.direction) - abs(door2.direction) == 1:
             return True
@@ -219,7 +238,7 @@ class LayoutGenerator(tk.Tk):
     def debugMethod(self):
         for i in self.allRooms:
             print(i.roomSize)
-        print("Button Works")
+        print("Button Works") # DELETE
 
     #LEFT CLICK BUTTON ACTION
     def gridButtonLeftWrapper(self, i, j): 
