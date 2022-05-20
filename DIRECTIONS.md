@@ -27,12 +27,13 @@ The student provided rubric is worth 150 points and is specific to the individua
   * Lines of Code: Write a minimum of 500 - 1000 lines of code. Markdown files and third-party libraries or modules do not count towards the line count but may be used. (20pt)
 * **Student Rubric (150pt)**
   * User able to choose the size of their room (15 pt)
-  * Room Creation Outcomes (XX pt)
-    * Input Screen Rejects invalid rooms (25 pt)
-    * User able to create a room (45 pt) (as defined as a size and at least one door)
-  * Permutations (XX pt)
+  * Room Creation Outcomes (60 pt)
+    * Input Screen Rejects invalid rooms (15 pt)
+    * User able to create a room (25 pt) (as defined as a size and at least one door)
+    * User sees visual representation of room confirming creation (20 pt)
+  * Permutations (70 pt)
     * Generates possible permutations using room inputs (45 pt)
-    * Output screen displays permutation results (15 pt)
+    * Output screen displays permutation results (25 pt)
   * Help screen with instructions on how to use program (5 pt)
 
 Total Points: 200
