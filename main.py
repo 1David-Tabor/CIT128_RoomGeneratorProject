@@ -213,14 +213,10 @@ class LayoutGenerator(tk.Tk):
         for i in validPairs:
             print(f'Room {i[0].parent.roomIndex}, Door {i[0].direction} : Room {i[1].parent.roomIndex}, Door {i[1].direction}') # DELETE
         run = []
-        for i in range(len(self.allRooms)):
+        for i in range(len(self.allRooms)-1):
             run.append(validPairs[i])
             validPairs = self.removeBadPairs(validPairs, run[-1])
-        print("Run")
-        for i in run:
-            print(f'Room {i[0].parent.roomIndex}, Door {i[0].direction} : Room {i[1].parent.roomIndex}, Door {i[1].direction}') # DELETE
-
-
+        self.drawLayout(run)
 
     def removeBadPairs(self, pairlist, pair):
         parentA = pair[0].parent
@@ -242,6 +238,31 @@ class LayoutGenerator(tk.Tk):
             return True
         else:
             return False
+
+    def drawLayout(self, doorPairList):
+        height = 0
+        width = 0
+        roomsChecked = set()
+        for i in doorPairList:
+            currentRooms = set()
+            currentRooms.add(i[0].parent)
+            currentRooms.add(i[1].parent)
+            currentRooms.difference(roomsChecked)
+            for j in currentRooms:
+                roomHeight = j.roomSize['y']+1
+                roomWidth = j.roomSize['x']+1
+                if i[0].direction == 0 or i[0].direction == 1:
+                    height += roomHeight
+                    if width < roomWidth:
+                        width = roomWidth
+                if i[0].direction == 3 or i[0].direction == 4:
+                    width += roomWidth
+                    if height < roomHeight:
+                        height = roomHeight
+                roomsChecked.add(j)
+
+        print('hw:',height, width)
+                
 
     def debugMethod(self):
         for i in self.allRooms:
