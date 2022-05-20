@@ -26,10 +26,10 @@ The student provided rubric is worth 150 points and is specific to the individua
   * GitHub Commits: Weekly programming commits showing progress from Week 9 - Week 16. (8pt)
   * Lines of Code: Write a minimum of 500 - 1000 lines of code. Markdown files and third-party libraries or modules do not count towards the line count but may be used. (20pt)
 * **Student Rubric (150pt)**
-  * User able to choose the size of their room (15 pt)
-  * Input Screen Rejects invalid rooms (25 pt)
-  * User able to create a room (45 pt) (as defined as a size and at least one door)
-  * Generates possible permutations using room inputs (45 pt)
+  * User able to choose and change the size of their room (15 pt)
+  * Rooms with less than 1 door or that are 1 "Square" wide are rejected. (25 pt)
+  * User able to place up to 4 doors (45 pt)
+  * Creates a permutation of rooms. (Possible layout using as many valid rooms as possible) (45 pt)
   * Output screen displays permutation results (15 pt)
   * Help screen with instructions on how to use program (5 pt)
 
