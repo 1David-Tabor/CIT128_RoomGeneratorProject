@@ -184,20 +184,20 @@ class LayoutGenerator(tk.Tk):
         self.viewFrame.grid(row=0, column=0)
 
         # Output Frame Setup
-        permutationBtn = Button(outputFrame, height=btnHeight, width=btnWidth, text='Permute',  command=self.permutateRooms)
+        permutationBtn = Button(outputFrame, height=btnHeight, width=btnWidth, text='Permute',  command=self.permuteBtn)
         permutationBtn.grid(row=0, column=0)
 
-    def permutateRooms(self):
+    def validDoorConnections(self, roomList):
         doorList = []
         validPairs = set()
-        for i in self.allRooms:
+        for i in roomList:
             doorList.append(i.doorPositions)
-        for rowi in doorList:
-            for doori in rowi: 
+        for rowi in doorList: #All these nested for loops get the possible
+            for doori in rowi:#different combinations for each door to each other door.
                 for rowj in doorList:
                     if rowj == rowi:
                         continue
-                    else:
+                    else: 
                         for doorj in rowj:
                             if self.doorMath(doori, doorj):
                                 doorset = (doori, doorj)
@@ -207,16 +207,6 @@ class LayoutGenerator(tk.Tk):
             mt = tuple(i)
             tmp.append(mt)
         validPairs = tmp
-        for i in validPairs:
-            print(f'Room {i[0].parent.roomIndex}, Door {i[0].direction} : Room {i[1].parent.roomIndex}, Door {i[1].direction}') # DELETE
-        validPairs = self.removeBadPairs(validPairs, validPairs[0])
-        for i in validPairs:
-            print(f'Room {i[0].parent.roomIndex}, Door {i[0].direction} : Room {i[1].parent.roomIndex}, Door {i[1].direction}') # DELETE
-        run = []
-        for i in range(len(self.allRooms)-1):
-            run.append(validPairs[i])
-            validPairs = self.removeBadPairs(validPairs, run[-1])
-        self.drawLayout(run)
 
     def removeBadPairs(self, pairlist, pair):
         parentA = pair[0].parent
@@ -240,8 +230,8 @@ class LayoutGenerator(tk.Tk):
             return False
 
     def drawLayout(self, doorPairList):
-        height = 0
-        width = 0
+        canvasHeight = 0
+        canvasWidth = 0
         roomsChecked = set()
         for i in doorPairList:
             currentRooms = set()
@@ -249,9 +239,10 @@ class LayoutGenerator(tk.Tk):
             currentRooms.add(i[1].parent)
             currentRooms.difference(roomsChecked)
             for j in currentRooms:
+                
                 roomHeight = j.roomSize['y']+1
                 roomWidth = j.roomSize['x']+1
-                if i[0].direction == 0 or i[0].direction == 1:
+                if i[0].direction == 0:
                     height += roomHeight
                     if width < roomWidth:
                         width = roomWidth
@@ -349,6 +340,28 @@ class LayoutGenerator(tk.Tk):
             label = Label(self.viewFrame, image=img)
             label.image = img
             label.grid(row = i)
+
+    def permuteBtn(self):
+        valids = self.validDoorConnections(self.allDoors)
+        biglist = self.permute(valids)
+    
+    def permute(self, pairs):
+        result = []
+        if len(pairs) == 1:
+            return [pairs[:]] #Base Case.
+        for i in range(len(pairs)):
+            tmp = pairs.pop(0)
+            goodPairs = self.removeBadPairs(pairs, tmp)
+            perms = self.permute(goodPairs) #Recursive Call.
+            for perm in perms:
+                perm.append(tmp)
+            result.extend(perms)
+            pairs.append(tmp)
+        return result
+
+
+
+
 
     def confirmRoom(self):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
