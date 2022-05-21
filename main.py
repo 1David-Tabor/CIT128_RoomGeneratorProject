@@ -206,7 +206,7 @@ class LayoutGenerator(tk.Tk):
         for i in validPairs:
             mt = tuple(i)
             tmp.append(mt)
-        validPairs = tmp
+        return tmp
 
     def removeBadPairs(self, pairlist, pair):
         parentA = pair[0].parent
@@ -253,7 +253,6 @@ class LayoutGenerator(tk.Tk):
                 roomsChecked.add(j)
 
         print('hw:',height, width)
-                
 
     def debugMethod(self):
         for i in self.allRooms:
@@ -342,8 +341,10 @@ class LayoutGenerator(tk.Tk):
             label.grid(row = i)
 
     def permuteBtn(self):
-        valids = self.validDoorConnections(self.allDoors)
-        biglist = self.permute(valids)
+        valids = self.validDoorConnections(self.allRooms)
+        print(valids)
+        #biglist = self.permute(valids)
+        print(type(valids))
     
     def permute(self, pairs):
         result = []
@@ -358,10 +359,6 @@ class LayoutGenerator(tk.Tk):
             result.extend(perms)
             pairs.append(tmp)
         return result
-
-
-
-
 
     def confirmRoom(self):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
