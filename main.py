@@ -5,8 +5,10 @@
     Student Directed Project
 '''
 import tkinter as tk
+from itertools import permutations
 from tkinter import ttk, Frame, Button, PhotoImage, Label
 from PIL import Image, ImageDraw, ImageTk
+import time
 
 BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
 BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
@@ -207,21 +209,6 @@ class LayoutGenerator(tk.Tk):
             mt = tuple(i)
             tmp.append(mt)
         return tmp
-
-    def removeBadPairs(self, pairlist, pair):
-        parentA = pair[0].parent
-        parentB = pair[1].parent 
-        tmplist = pairlist
-        for currPair in tmplist: 
-            if currPair == pair:
-                continue
-            elif currPair[0] == pair[0] or currPair[0] == pair[1] or currPair[1] == pair[0] or currPair[1] == pair[1]:
-                tmplist.remove(currPair)
-            elif parentA == currPair[0].parent and parentB == currPair[1].parent:
-                tmplist.remove(currPair)
-            elif parentA == currPair[1].parent and parentB == currPair[0].parent:
-                tmplist.remove(currPair)
-        return tmplist
     
     def doorMath(self, door1, door2):
         if abs(door1.direction) - abs(door2.direction) == 1:
@@ -342,23 +329,56 @@ class LayoutGenerator(tk.Tk):
 
     def permuteBtn(self):
         valids = self.validDoorConnections(self.allRooms)
-        print(valids)
-        #biglist = self.permute(valids)
-        print(type(valids))
-    
-    def permute(self, pairs):
-        result = []
-        if len(pairs) == 1:
-            return [pairs[:]] #Base Case.
-        for i in range(len(pairs)):
-            tmp = pairs.pop(0)
-            goodPairs = self.removeBadPairs(pairs, tmp)
-            perms = self.permute(goodPairs) #Recursive Call.
-            for perm in perms:
-                perm.append(tmp)
-            result.extend(perms)
-            pairs.append(tmp)
-        return result
+        biglist2 = permutations(valids, len(self.allRooms)-1)
+        goodList = []
+        t1 = time.time()
+        for i in biglist2:
+            if self.isValidPerm(i):
+                goodList.append(i)
+        t2 = time.time()
+        print("Time:", t2-t1)
+        counter = 0
+        for i in goodList:
+            print(f"\nPerm {counter}")
+            counter += 1
+            for j in i:
+                print(f'({j[0].parent.roomIndex}, {j[0].direction}) -> ({j[1].parent.roomIndex}, {j[1].direction})')
+
+
+    def isValidPerm(self, perm):
+        for i in perm:
+            for j in perm:
+                if i == j:
+                    continue
+                elif i[0] == j[0]:
+                    return False
+                elif i[0] == j[1]:
+                    return False
+                elif i[1] == j[0]:
+                    return False
+                elif i[1] == j[1]:
+                    return False
+                elif i[0].parent == j[0].parent and i[1].parent == j[1].parent:
+                    return False
+                elif i[0].parent == j[1].parent and i[1].parent == j[0].parent:
+                    return False
+                else: return True
+
+    def removeBadPairs(self, pairlist, pair):
+        parentA = pair[0].parent
+        parentB = pair[1].parent 
+        tmplist = pairlist
+        for currPair in tmplist: 
+            if currPair == pair:
+                continue
+            elif currPair[0] == pair[0] or currPair[0] == pair[1] or currPair[1] == pair[0] or currPair[1] == pair[1]:
+                tmplist.remove(currPair)
+            elif parentA == currPair[0].parent and parentB == currPair[1].parent:
+                tmplist.remove(currPair)
+            elif parentA == currPair[1].parent and parentB == currPair[0].parent:
+                tmplist.remove(currPair)
+        return tmplist
+        
 
     def confirmRoom(self):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
