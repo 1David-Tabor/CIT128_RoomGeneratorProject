@@ -9,6 +9,7 @@ from itertools import permutations
 from tkinter import ttk, Frame, Button, PhotoImage, Label
 from PIL import Image, ImageDraw, ImageTk
 import time
+import random
 
 BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
 BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
@@ -17,11 +18,6 @@ def abs(val):
     if val < 0:
         return val * (-1)
     else: return val
-
-class Layout:
-    def __init__(self):
-        self.rooms = []
-        self.size = {'x':0, 'y':0}
 
 class Room:
     '''
@@ -39,6 +35,8 @@ class Room:
 
     def __init__(self, roomSize, doorPositions):
         self.roomSize = roomSize
+        self.relativeX = roomSize['y']
+        self.relativeY = roomSize['x']
         self.doorPositions = doorPositions
         self.img = self.draw()
         print('room created of size:', self.roomSize) # DELETE
@@ -50,6 +48,17 @@ class Room:
             print(f'Door: x:{i.xpos}, y:{i.ypos}')
         print('\n')
 
+    def updatePosition(self, placedDoor):
+        deltaX = (placedDoor.xpos - placedDoor.relativeX) +1
+        deltaY = (placedDoor.ypos - placedDoor.relativeY) +1
+        self.relativeX += self.roomSize['x'] + deltaX
+        self.relativeY += self.roomSize['y'] + deltaY
+        for i in self.doorPositions:
+            if i == placedDoor:
+                continue
+            else:
+                i.relativeX = i.xpos + deltaX
+                i.relativeY = i.ypos + deltaY
     
     def draw(self):
         '''
@@ -85,6 +94,8 @@ class Door:
     def __init__(self, x, y, direction):
         self.xpos = x
         self.ypos = y
+        self.relativeX = x
+        self.relativeY = y
         self.direction = direction
         self.parent = None
 
@@ -117,6 +128,8 @@ class LayoutGenerator(tk.Tk):
         self.currDoor = None
         self.allDoors = []
         self.allRooms = []
+        self.allPerms = []
+        self.oldPerms = []
         self.screenSetup()
         
     def makeButtonGrid(self, size, frame):
@@ -216,36 +229,28 @@ class LayoutGenerator(tk.Tk):
         else:
             return False
 
-    def drawLayout(self, doorPairList):
-        canvasHeight = 0
-        canvasWidth = 0
+    def drawLayout(self, permList):
+        randIndex = random.randrange(0, len(permList))
+        tmp = permList.pop(randIndex)
         roomsChecked = set()
-        for i in doorPairList:
+        for doorPair in tmp: 
             currentRooms = set()
-            currentRooms.add(i[0].parent)
-            currentRooms.add(i[1].parent)
+            currentRooms.add(doorPair[0].parent)
+            currentRooms.add(doorPair[1].parent)
             currentRooms.difference(roomsChecked)
-            for j in currentRooms:
-                
-                roomHeight = j.roomSize['y']+1
-                roomWidth = j.roomSize['x']+1
-                if i[0].direction == 0:
-                    height += roomHeight
-                    if width < roomWidth:
-                        width = roomWidth
-                if i[0].direction == 3 or i[0].direction == 4:
-                    width += roomWidth
-                    if height < roomHeight:
-                        height = roomHeight
-                roomsChecked.add(j)
-
-        print('hw:',height, width)
+            for i in doorPair:
+                if len(roomsChecked) == 0:
+                    roomsChecked.add(i.parent)
+                    continue
+                if i.parent in currentRooms: # If the door's parent is in current rooms then the door hasn't had its position updated.
+                    i.parent.updatePosition(i)
+        print("type for tmp:", type(tmp))  # DELETE
+        self.oldPerms.append(tmp)
 
     def debugMethod(self):
-        for i in self.allRooms:
-            print(i.roomSize)
-        print("Button Works") # DELETE
-
+        self.drawLayout(self.allPerms)
+        counter = 0
+        
     #LEFT CLICK BUTTON ACTION
     def gridButtonLeftWrapper(self, i, j): 
         return lambda Button: self.gridButtonLeft(self.btns[i][j])
@@ -329,21 +334,24 @@ class LayoutGenerator(tk.Tk):
 
     def permuteBtn(self):
         valids = self.validDoorConnections(self.allRooms)
-        biglist2 = permutations(valids, len(self.allRooms)-1)
-        goodList = []
-        t1 = time.time()
-        for i in biglist2:
+        print("valids len:", len(valids)) # DELETE
+        perms = permutations(valids, len(self.allRooms)-1)
+        goodPerms = []
+        t1 = time.time() # DELETE
+        for i in perms:
             if self.isValidPerm(i):
-                goodList.append(i)
-        t2 = time.time()
-        print("Time:", t2-t1)
+                print("was valid")
+                goodPerms.append(i)
+        t2 = time.time() # DELETE
+        print("Time:", t2-t1) # DELETE
+        self.allPerms = goodPerms
         counter = 0
-        for i in goodList:
+        print("Len:", len(goodPerms)) # DELETE
+        for i in goodPerms: # DELETE
             print(f"\nPerm {counter}")
             counter += 1
             for j in i:
                 print(f'({j[0].parent.roomIndex}, {j[0].direction}) -> ({j[1].parent.roomIndex}, {j[1].direction})')
-
 
     def isValidPerm(self, perm):
         for i in perm:
@@ -363,22 +371,7 @@ class LayoutGenerator(tk.Tk):
                 elif i[0].parent == j[1].parent and i[1].parent == j[0].parent:
                     return False
                 else: return True
-
-    def removeBadPairs(self, pairlist, pair):
-        parentA = pair[0].parent
-        parentB = pair[1].parent 
-        tmplist = pairlist
-        for currPair in tmplist: 
-            if currPair == pair:
-                continue
-            elif currPair[0] == pair[0] or currPair[0] == pair[1] or currPair[1] == pair[0] or currPair[1] == pair[1]:
-                tmplist.remove(currPair)
-            elif parentA == currPair[0].parent and parentB == currPair[1].parent:
-                tmplist.remove(currPair)
-            elif parentA == currPair[1].parent and parentB == currPair[0].parent:
-                tmplist.remove(currPair)
-        return tmplist
-        
+        return True
 
     def confirmRoom(self):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
