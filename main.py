@@ -5,52 +5,119 @@
     Student Directed Project
 '''
 import tkinter as tk
+from itertools import permutations
 from tkinter import ttk, Frame, Button, PhotoImage, Label
 from PIL import Image, ImageDraw, ImageTk
+import time
+import random
 
 BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
 BTN_R_CLICK = '<Button-2>' #binds buttons to right click.
 
-class Layout:
-    def __init__(self):
-        self.rooms = []
-        self.size = {'x':0, 'y':0}
-
-
+def abs(val):
+    if val < 0:
+        return val * (-1)
+    else: return val
 
 class Room:
-    """data structure to store each room."""
+    '''
+    Object to store a room as size and door locations.
+    
+    Parameters:
+        roomSize (dict): the 'x' and 'y' dimensions of the room.
+
+        doorPositions (dict): 'x' and 'y' coordinates of where the door is in relation
+        to the room size, and the 'direction' of the door.
+    
+    Methods: 
+        draw: creates representative image of the room and it's door positions.
+    '''
+
     def __init__(self, roomSize, doorPositions):
         self.roomSize = roomSize
+        self.relativeX = roomSize['x']
+        self.relativeY = roomSize['y']
         self.doorPositions = doorPositions
         self.img = self.draw()
-        print('room created of size:', self.roomSize)
-        print('doors located at:', self.doorPositions)
+        print('room created of size:', self.roomSize) # DELETE
+        print('doors located at:', self.doorPositions) # DELETE
+
+    def print(self):
+        print(f'\nRoomsize: {self.roomSize}')
+        for i in self.doorPositions:
+            print(f'Door: x:{i.xpos}, y:{i.ypos}')
+        print('\n')
+
+    def updatePosition(self, placedDoor):
+        deltaX = (placedDoor.relativeX - placedDoor.xpos)
+        deltaY = (placedDoor.relativeY - placedDoor.ypos)
+        print("DeltaX:", deltaX, "Delta Y:", deltaY) # DELETE
+        self.relativeX += deltaX
+        self.relativeY += deltaY
+        for i in self.doorPositions:
+            if i == placedDoor:
+                continue
+            else:
+                i.relativeX = i.xpos + deltaX
+                i.relativeY = i.ypos + deltaY
     
     def draw(self):
+        '''
+        Creates representative image of the room and it's door positions.
+
+        Parameters:
+            None, creates image based on object properties defined in __init__. 
+
+        Returns:
+            ImageTk.PhotoImage object which can be displayed using Tkinter.
+        '''
         xSize = self.roomSize['x'] + 1
         ySize = self.roomSize['y'] + 1
-        pixelsPerTile = 25
+        pixelsPerTile = 25 #Can be modified to adjust tile size.
         doors = []
         for i in self.doorPositions:
-            doors.append((i['x']*pixelsPerTile, i['y']*pixelsPerTile))
+            doors.append((i.xpos*pixelsPerTile, i.ypos*pixelsPerTile))
         img = Image.new('RGB', (xSize*pixelsPerTile+1, ySize*pixelsPerTile+1), (125, 125, 125))
         draw = ImageDraw.Draw(img)
         for i in range(0, pixelsPerTile*xSize, pixelsPerTile):
             for j in range(0, ySize*pixelsPerTile, pixelsPerTile):
                 if (i, j) in doors: # If current coordinate is a door tile, change the color.
                     shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
-                    color = '#187225'
+                    color = '#187225' # green
                 else:
                     shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
-                    color = '#ff785a'
+                    color = '#ff785a' # red
                 draw.rectangle(shape, fill=color, outline='black')
-        #img.show()
         img = ImageTk.PhotoImage(img)
         return img
 
+class Door:
+    def __init__(self, x, y, direction):
+        self.xpos = x
+        self.ypos = y
+        self.relativeX = x
+        self.relativeY = y
+        self.direction = direction
+        self.parent = None
+
 # Main app window
 class LayoutGenerator(tk.Tk):
+    '''
+    Object to create rooms and generate layouts from permutations of the rooms.
+
+    Methods:
+        makeButtonGrid(size, frame): Creates a square grid of 'size' buttons in specified frame.
+        screenSetup(): Sets up frames, tabs, and buttons for the program.
+        gridButtonLeftWrapper(i, j): Gets button at coordinates [i][j] and passes it to gridButtonLeft.
+        gridButtonLeft(btn): Sets the size (x, y) of the room in progress.
+        gridButtonRightWrapper(i, j): Gets button at coordinates [i][j] and passes it to gridButtonRight.
+        gridButtonRight(btn): Attempts to set passed button as the current door if it would be a valid door.
+        updateIcons(x, y, icon, batch, updateDoors): Updates a set of buttons or a singular button to
+            set their image to icon.
+        clearSize(): Resets icons to default, deletes room in progress.
+        updateViewFrame(): Displays room images to the right of the grid.
+        confirmDoor(): Adds the current door to the current room. Deletes older door if there is a conflict.
+    '''
     def __init__(self):
         tk.Tk.__init__(self)
         self.btns = dict({})
@@ -62,6 +129,8 @@ class LayoutGenerator(tk.Tk):
         self.currDoor = None
         self.allDoors = []
         self.allRooms = []
+        self.allPerms = []
+        self.oldPerms = []
         self.screenSetup()
         
     def makeButtonGrid(self, size, frame):
@@ -104,6 +173,7 @@ class LayoutGenerator(tk.Tk):
         tabs.add(outputFrame, text='Output')
         tabs.add(helpFrame, text='Help')
 
+        # Input Frame Setup
         inputFrameL = Frame(inputFrame, width=self.screenWidth, height=self.screenHeight)
         inputFrameR = Frame(inputFrame, width=self.screenWidth, height=self.screenHeight)
         inputFrameL.grid(column=0, row=0)
@@ -128,11 +198,140 @@ class LayoutGenerator(tk.Tk):
         # Quadrants 2 & 4: Room viewer.
         self.viewFrame = Frame(inputFrameR, padx=5, pady=5)
         self.viewFrame.grid(row=0, column=0)
-        #label = Label(viewFrame, image=)
+
+        # Output Frame Setup
+        permutationBtn = Button(outputFrame, height=btnHeight, width=btnWidth, text='Permute',  command=self.permuteBtn)
+        permutationBtn.grid(row=0, column=0)
+
+    def validDoorConnections(self, roomList):
+        doorList = []
+        validPairs = set()
+        for i in roomList:
+            doorList.append(i.doorPositions)
+        for rowi in doorList: #All these nested for loops get the possible
+            for doori in rowi:#different combinations for each door to each other door.
+                for rowj in doorList:
+                    if rowj == rowi:
+                        continue
+                    else: 
+                        for doorj in rowj:
+                            if self.doorMath(doori, doorj):
+                                doorset = (doori, doorj)
+                                validPairs.add(frozenset(doorset))
+        tmp = []
+        for i in validPairs:
+            mt = tuple(i)
+            tmp.append(mt)
+        return tmp
+    
+    def doorMath(self, door1, door2):
+        if abs(door1.direction) - abs(door2.direction) == 1:
+            return True
+        else:
+            return False
+
+    def drawLayout(self, permList):
+        randIndex = random.randrange(0, len(permList))
+        tmp = permList.pop(randIndex)
+        roomsChecked = set()
+        for doorPair in tmp: 
+            currentRooms = set()
+            currentRooms.add(doorPair[0].parent)
+            currentRooms.add(doorPair[1].parent)
+            currentRooms.difference(roomsChecked)
+            for door in doorPair:
+                otherDoor = None
+                for j in doorPair:
+                    if j == door:
+                        continue
+                    else:
+                        otherDoor = j
+                if len(roomsChecked) == 0:
+                    roomsChecked.add(door.parent)
+                    currentRooms.remove(door.parent)
+                    continue
+                if door.parent in currentRooms: # If the door's parent is in current rooms then the door hasn't had its position updated.
+                    if door.direction == 0: # N
+                        door.relativeX = otherDoor.relativeX
+                        door.relativeY = otherDoor.relativeY+1
+                    elif door.direction == 1: # S
+                        door.relativeX = otherDoor.relativeX
+                        door.relativeY = otherDoor.relativeY-1
+                    elif door.direction == 3: # W
+                        door.relativeX = otherDoor.relativeX+1
+                        door.relativeY = otherDoor.relativeY 
+                    elif door.direction == 4: # E
+                        door.relativeX = otherDoor.relativeX-1
+                        door.relativeY = otherDoor.relativeY
+                    print("Door XY:",door.relativeX, door.relativeY)
+                    door.parent.updatePosition(door)
+                    roomsChecked.add(door.parent)
+        self.oldPerms.append(tmp)
+        parents = set()
+        for i in self.oldPerms[-1]:
+            for j in i:
+                parents.add(j.parent)
+        xFactor = 0
+        yFactor = 0
+        xMax = 0
+        yMax = 0
+        for room in parents: #Updating all positions to be positive.
+            if room.relativeX <= xFactor:
+                xFactor = room.relativeX - room.roomSize['x']
+            if room.relativeY <= yFactor:
+                yFactor = room.relativeY - room.roomSize['y']
+            if room.relativeX > xMax:
+                xMax = room.relativeX 
+            if room.relativeY > yMax:
+                yMax = room.relativeY 
+        xFactor = abs(xFactor)
+        yFactor = abs(yFactor)
+        xMax += xFactor +1
+        yMax += yFactor +1
+        for room in parents: 
+            room.relativeX += xFactor
+            room.relativeY += yFactor
+            for door in room.doorPositions:
+                door.relativeX += xFactor
+                door.relativeY += yFactor
+        pixelsPerTile = 25
+        img = Image.new('RGB', (xMax*pixelsPerTile+1, yMax*pixelsPerTile+1), (125, 125, 125))
+        draw = ImageDraw.Draw(img)
+        for room in parents:
+            doors = []
+            for door in room.doorPositions:
+                x = (door.relativeX)
+                y = (door.relativeY)
+                doors.append((x, y))
+            for i in doors:
+                print('door:',i)
+            x2 = (room.relativeX+1)
+            y2 = (room.relativeY+1)
+            x1 = (room.relativeX - room.roomSize['x'])
+            y1 = (room.relativeY - (room.roomSize['y']))
+            print(f"x1:{x1} y1:{y1} x2:{x2}: y2:{y2}") # DELETE
+            for i in range(x1, x2):
+                for j in range(y1, y2):
+                    imod = i * pixelsPerTile
+                    jmod = j * pixelsPerTile
+                    print('i, j:',i, j)
+                    if (i, j) in doors:
+                        print(i, j, "found in doors" ) # DELETE
+                        shape = [(imod, jmod), (imod+pixelsPerTile, jmod+pixelsPerTile)]
+                        color = '#187225' # green
+                    else:
+                        shape = [(imod, jmod), (imod+pixelsPerTile, jmod+pixelsPerTile)]
+                        color = '#ff785a' # red
+                    draw.rectangle(shape, fill=color, outline='black')
+        img = ImageTk.PhotoImage(img)
+        return img
 
     def debugMethod(self):
-        print(self.allDoors) # DELETE
-
+        img = self.drawLayout(self.allPerms)
+        label = Label(self.viewFrame, image=img)
+        label.image = img
+        label.grid()
+        
     #LEFT CLICK BUTTON ACTION
     def gridButtonLeftWrapper(self, i, j): 
         return lambda Button: self.gridButtonLeft(self.btns[i][j])
@@ -156,7 +355,7 @@ class LayoutGenerator(tk.Tk):
         x = btn['xpos']
         y = btn['ypos']
         #TODO Currently corners aren't handled.  Prioritizes vertical travel.
-        #Directions: 0=North, 1=South, 2=East, 3=West.
+        #Directions: 0=North, 1=South, 4=East, 3=West.
         if y == 0 and x <= self.roomSize['x']: #North wall,
             print("NORTH WALL") # DELETE
             validDoor = True
@@ -172,7 +371,7 @@ class LayoutGenerator(tk.Tk):
         elif x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
             print("EAST WALL") # DELETE
             validDoor = True
-            direction = 2
+            direction = 4
 
         if validDoor:
             if self.currDoor is not None: #if door already selected, delete prev selection.
@@ -195,7 +394,7 @@ class LayoutGenerator(tk.Tk):
             currBtn['button'].image = icon
         if updateDoors:
             for i in self.allDoors:
-                currBtn = self.btns[i['y']][i['x']]
+                currBtn = self.btns[i.ypos][i.xpos]
                 currBtn['button'].configure(image=self.icons['door'])
                 currBtn['button'].image = self.icons['door']
 
@@ -214,30 +413,75 @@ class LayoutGenerator(tk.Tk):
             label.image = img
             label.grid(row = i)
 
+    def permuteBtn(self):
+        valids = self.validDoorConnections(self.allRooms)
+        print("valids len:", len(valids)) # DELETE
+        perms = permutations(valids, len(self.allRooms)-1)
+        goodPerms = []
+        t1 = time.time() # DELETE
+        for i in perms:
+            # TODO Currently allows duplicates of each perm in reverse order.
+            if self.isValidPerm(i):
+                print("was valid") # DELETE
+                goodPerms.append(i)
+        t2 = time.time() # DELETE
+        print("Time:", t2-t1) # DELETE
+        self.allPerms = goodPerms
+        counter = 0
+        print("Len:", len(goodPerms)) # DELETE
+        for i in goodPerms: # DELETE
+            print(f"\nPerm {counter}")
+            counter += 1
+            for j in i:
+                print(f'({j[0].parent.roomIndex}, {j[0].direction}) -> ({j[1].parent.roomIndex}, {j[1].direction})')
+
+    def isValidPerm(self, perm):
+        for i in perm:
+            for j in perm:
+                if i == j:
+                    continue
+                elif i[0] == j[0]:
+                    return False
+                elif i[0] == j[1]:
+                    return False
+                elif i[1] == j[0]:
+                    return False
+                elif i[1] == j[1]:
+                    return False
+                elif i[0].parent == j[0].parent and i[1].parent == j[1].parent:
+                    return False
+                elif i[0].parent == j[1].parent and i[1].parent == j[0].parent:
+                    return False
+                else: return True
+        return True
+
     def confirmRoom(self):
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
-            r = Room(roomSize=self.roomSize, doorPositions=self.allDoors)
+            r = Room(roomSize=dict(self.roomSize), doorPositions=self.allDoors)
+            for i in r.doorPositions:
+                i.parent = r # adding reference to parent.
             self.allRooms.append(r)
-            print(len(self.allRooms)) # DELETE
+            r.roomIndex = len(self.allRooms) - 1
             self.updateViewFrame()
             self.clearSize()
 
     def confirmDoor(self):
         if self.currDoor != None:
+            door = Door(self.currDoor['x'], self.currDoor['y'], self.currDoor['direction'])
             if self.allDoors == []:
-                self.allDoors.append(self.currDoor)
+                self.allDoors.append(door)
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
             else: #if allDoors contains items.
                 for i in range(len(self.allDoors)):
                     #Two doors with the same "direction" are always on the same wall.
                     #When the loop finds a door on the same wall it gets replaced with the more recent door.
-                    if self.currDoor['direction'] == self.allDoors[i]['direction']:
-                        tmpX, tmpY = self.allDoors[i]['x'], self.allDoors[i]['y']
+                    if self.currDoor['direction'] == self.allDoors[i].direction:
+                        tmpX, tmpY = self.allDoors[i].xpos, self.allDoors[i].ypos
                         self.allDoors.pop(i)
-                        self.allDoors.append(self.currDoor)
+                        self.allDoors.append(door)
                         self.updateIcons(tmpX, tmpY, self.icons['selected'], batch=False, updateDoors=True)
                         return
-                self.allDoors.append(self.currDoor)
+                self.allDoors.append(door)
                 self.updateIcons(self.currDoor['x'], self.currDoor['y'], self.icons['door'], batch=False)
 
 a = LayoutGenerator()
