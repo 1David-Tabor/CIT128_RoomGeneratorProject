@@ -4,9 +4,10 @@
     CIT 128: Python Programming II
     Student Directed Project
 '''
+from math import perm
 import tkinter as tk
 from itertools import permutations
-from tkinter import ttk, Frame, Button, PhotoImage, Label
+from tkinter import ttk, Frame, Button, PhotoImage, Label, messagebox
 from PIL import Image, ImageDraw, ImageTk
 import time
 import random
@@ -39,8 +40,8 @@ class Room:
         self.relativeY = roomSize['y']
         self.doorPositions = doorPositions
         self.img = self.draw()
-        print('room created of size:', self.roomSize) # DELETE
-        print('doors located at:', self.doorPositions) # DELETE
+        print('room created of size:', self.roomSize) 
+        print('doors located at:', self.doorPositions) 
 
     def print(self):
         print(f'\nRoomsize: {self.roomSize}')
@@ -52,7 +53,6 @@ class Room:
         print("\nPlaced Door Position:", placedDoor.relativeX, placedDoor.relativeY)
         deltaX = (placedDoor.relativeX - placedDoor.xpos)
         deltaY = (placedDoor.relativeY - placedDoor.ypos)
-        print("DeltaX:", deltaX, "Delta Y:", deltaY) # DELETE
         print("Current Position:", self.relativeX, self.relativeY)
         self.relativeX += deltaX
         self.relativeY += deltaY
@@ -207,7 +207,32 @@ class LayoutGenerator(tk.Tk):
         permutationBtn.grid(row=0, column=0)
         sizeBtn = Button(self.outputFrame, height=btnHeight, width=btnWidth, text='Next\nPermutation',  command=self.nextPerm)
         sizeBtn.grid(row=1, column=0)
-        
+        self.outputLabel = Label(self.outputFrame)
+        self.outputLabel.grid(row=0,column=1)
+
+        # Help Frame Setup
+        inputHelpTitle = 'Input Screen'
+        inputHelpText1 = ('Left click a position on the grid to select the size of a room.\n'
+                        'The minimum size for a room is 2x2.\n'
+                        'Once you have chosen a size, right click on one of the highlighted edges to place a door.\n'
+                        'Only one door may be placed per wall.\n'
+                        'If you are happy with the placement of your door, click the \'Door Confirm\' Button.\n'
+                        'To move a door simply place a new door on the same wall and the old one will be removed.')
+        inputHelpLabel0 = Label(helpFrame, font=('arial bold', 20), text=inputHelpTitle)
+        inputHelpLabel1 = Label(helpFrame, anchor='e', justify='left', text=inputHelpText1)
+        inputHelpLabel0.grid(row=0)
+        inputHelpLabel1.grid(row=1)
+        inputHelpTitle = 'Output Screen'
+        inputHelpText1 = ('After you have input at least 2 rooms you may proceed to the output screen.\n'
+                        'On the output screen, click the \'Make Permutations\' Button.\n'
+                        'This will come up with the possible combinations of rooms behind the scenes.\n'
+                        'Then click the \'Next Permutation\' Button to see a permutation.\n'
+                        'The \'Next Permutation\' Button will pick a random permutation for you and display it.\n'
+                        'After you have viewed every permutation a graphic will appear alerting you.')
+        inputHelpLabel2 = Label(helpFrame, font=('arial bold', 20), text=inputHelpTitle)
+        inputHelpLabel3 = Label(helpFrame,anchor='e', justify='left', text=inputHelpText1)
+        inputHelpLabel2.grid(row=2)
+        inputHelpLabel3.grid(row=3)
 
     def validDoorConnections(self, roomList):
         doorList = []
@@ -240,7 +265,7 @@ class LayoutGenerator(tk.Tk):
         if len(permList) == 0:
             return self.icons['nmp']
         randIndex = random.randrange(0, len(permList))
-        tmp = permList.pop(randIndex)
+        tmp = list(permList.pop(randIndex))
         roomsPositioned = set()
         for doorPair in tmp: 
             if len(roomsPositioned) == 0:
@@ -339,29 +364,28 @@ class LayoutGenerator(tk.Tk):
         return img
 
     def nextPerm(self):
+        print('type for all perms in next perm', type(self.allPerms))
         img = self.drawLayout(self.allPerms)
-        self.outputLabel = Label(self.outputFrame, image=img)
+        self.outputLabel.configure(image = img)
         self.outputLabel.image = img
-        self.outputLabel.grid(row=0,column=1)
         
     #LEFT CLICK BUTTON ACTION
     def gridButtonLeftWrapper(self, i, j): 
         return lambda Button: self.gridButtonLeft(self.btns[i][j])
     def gridButtonLeft(self, btn):
-        print("L Click") # DELETE
         if self.roomSize != {'x':0,'y':0}:
             self.currDoor = None
             self.clearSize()
         self.roomSize['x'] = btn['xpos']
         self.roomSize['y'] = btn['ypos']
         self.updateIcons(btn['xpos'], btn['ypos'], self.icons['selected'])
-        print(self.roomSize) # DELETE
+        print(self.roomSize) 
         
     #RIGHT CLICK BUTTON ACTION
     def gridButtonRightWrapper(self, i, j):
         return lambda Button: self.gridButtonRight(self.btns[i][j])
     def gridButtonRight(self, btn):
-        print("R Click") # DELETE
+        print("R Click") 
         validDoor = False
         direction = None
         x = btn['xpos']
@@ -369,19 +393,19 @@ class LayoutGenerator(tk.Tk):
         #TODO Currently corners aren't handled.  Prioritizes vertical travel.
         #Directions: 0=North, 1=South, 4=East, 3=West.
         if y == 0 and x <= self.roomSize['x']: #North wall,
-            print("NORTH WALL") # DELETE
+            print("NORTH WALL") 
             validDoor = True
             direction = 0
         elif y == self.roomSize['y'] and x <= self.roomSize['x']: #South wall,
-            print("SOUTH WALL") # DELETE
+            print("SOUTH WALL") 
             validDoor = True
             direction = 1
         elif x == 0 and y <= self.roomSize['y']: #West wall,
-            print("WEST WALL") # DELETE
+            print("WEST WALL") 
             validDoor = True
             direction = 3
         elif x == self.roomSize['x'] and y <= self.roomSize['y']: #East wall,
-            print("EAST WALL") # DELETE
+            print("EAST WALL")
             validDoor = True
             direction = 4
 
@@ -427,16 +451,17 @@ class LayoutGenerator(tk.Tk):
 
     def permuteBtn(self):
         valids = self.validDoorConnections(self.allRooms)
-        print("valids len:", len(valids)) # DELETE
         perms = permutations(valids, len(self.allRooms)-1)
         goodPerms = []
-        t1 = time.time() # DELETE
+        t1 = time.time()
         for i in perms:
             # TODO Currently allows duplicates of each perm in reverse order.
             if self.isValidPerm(i):
                 goodPerms.append(i)
-        t2 = time.time() # DELETE
-        print("Time:", t2-t1) # DELETE
+        t2 = time.time() 
+        print("Good Permutations Found in:", t2-t1) 
+        print("Good perms:", type(goodPerms))
+        print("All perms:", type(self.allPerms))
         self.allPerms = goodPerms
 
     def isValidPerm(self, perm):
@@ -460,7 +485,13 @@ class LayoutGenerator(tk.Tk):
         return True
 
     def confirmRoom(self):
-        if self.roomSize['x'] != 0 and self.roomSize['y'] != 0 and len(self.allDoors) > 0:
+        check1 = False
+        check2 = False
+        if self.roomSize['x'] != 0 and self.roomSize['y'] != 0:
+            check1 = True
+        if len(self.allDoors) > 0:
+            check2 = True
+        if check1 and check2:
             r = Room(roomSize=dict(self.roomSize), doorPositions=self.allDoors)
             for i in r.doorPositions:
                 i.parent = r # adding reference to parent.
@@ -468,6 +499,12 @@ class LayoutGenerator(tk.Tk):
             r.roomIndex = len(self.allRooms) - 1
             self.updateViewFrame()
             self.clearSize()
+        else: 
+            if check1:
+                messagebox.showinfo("uh-oh.","Minimum room size is 2x2.")
+            if check2:
+                messagebox.showinfo("uh-oh.","Minimum room size is 2x2.")
+            messagebox.showinfo("uh-oh.","Minimum room size is 2x2.")
 
     def confirmDoor(self):
         if self.currDoor != None:
