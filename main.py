@@ -287,7 +287,7 @@ class LayoutGenerator(tk.Tk):
         xFactor = abs(xFactor)
         yFactor = abs(yFactor)
         xMax += xFactor + 1
-        yMax += yFactor + 1 
+        yMax += yFactor
         for room in parents: 
             room.relativeX += xFactor
             room.relativeY += yFactor
@@ -301,16 +301,21 @@ class LayoutGenerator(tk.Tk):
         for room in parents:
             doors = []
             for door in room.doorPositions:
-                x = door.relativeX * pixelsPerTile
-                y = door.relativeY * pixelsPerTile
+                x = (door.relativeX) * pixelsPerTile
+                y = (door.relativeY) * pixelsPerTile
                 doors.append((x, y))
+            for i in doors:
+                print('door:',i)
             x2 = (room.relativeX+1)*pixelsPerTile
-            y2 = (room.relativeY+1)*pixelsPerTile
-            x1 = x2 - ((room.roomSize['x']+1)*pixelsPerTile)
-            y1 = y2 - ((room.roomSize['y']+1)*pixelsPerTile)
-            for i in range(x1, x2, pixelsPerTile):
-                for j in range(y1, y2, pixelsPerTile):
+            y2 = (room.relativeY)*pixelsPerTile
+            x1 = x2 - ((room.roomSize['x'])*pixelsPerTile)
+            y1 = y2 - ((room.roomSize['y'])*pixelsPerTile)
+            print(f"x1:{x1} y1:{y1} x2:{x2}: y2:{y2} ppt:{pixelsPerTile}")
+            for i in range(x1, x2, 25):
+                for j in range(y1, y2, 25):
+                    print('i, j:',i, j)
                     if (i, j) in doors:
+                        print(i, j, "found in doors" )
                         shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
                         color = '#187225' # green
                     else:
