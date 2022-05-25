@@ -271,35 +271,60 @@ class LayoutGenerator(tk.Tk):
         for i in self.oldPerms[-1]:
             for j in i:
                 parents.add(j.parent)
-
-        for i in parents:
-            print(f"Room:{i.roomIndex}, pos: ({i.relativeX},{i.relativeY})")
-
         xFactor = 0
         yFactor = 0
+        xMax = 0
+        yMax = 0
         for room in parents: #Updating all positions to be positive.
             if room.relativeX < xFactor:
                 xFactor = room.relativeX - room.roomSize['x']
             if room.relativeY < yFactor:
                 yFactor = room.relativeY - room.roomSize['y']
+            if room.relativeX > xMax:
+                xMax = room.relativeX
+            if room.relativeY > yMax:
+                yMax = room.relativeY
         xFactor = abs(xFactor)
-        print("xfac", xFactor) # DELETE
         yFactor = abs(yFactor)
-        print("yfac", yFactor)# DELETE
+        xMax += xFactor + 1
+        yMax += yFactor + 1 
         for room in parents: 
             room.relativeX += xFactor
             room.relativeY += yFactor
             for door in room.doorPositions:
                 door.relativeX += xFactor
                 door.relativeY += yFactor
-
-        for i in parents:
-            print(f"Room:{i.roomIndex}, pos: ({i.relativeX},{i.relativeY})")
-
+        pixelsPerTile = 25
+        print("Xmax:", xMax, "yMax:", yMax )
+        img = Image.new('RGB', (xMax*pixelsPerTile+1, yMax*pixelsPerTile+1), (125, 125, 125))
+        draw = ImageDraw.Draw(img)
+        for room in parents:
+            doors = []
+            for door in room.doorPositions:
+                x = door.relativeX * pixelsPerTile
+                y = door.relativeY * pixelsPerTile
+                doors.append((x, y))
+            x2 = (room.relativeX+1)*pixelsPerTile
+            y2 = (room.relativeY+1)*pixelsPerTile
+            x1 = x2 - ((room.roomSize['x']+1)*pixelsPerTile)
+            y1 = y2 - ((room.roomSize['y']+1)*pixelsPerTile)
+            for i in range(x1, x2, pixelsPerTile):
+                for j in range(y1, y2, pixelsPerTile):
+                    if (i, j) in doors:
+                        shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
+                        color = '#187225' # green
+                    else:
+                        shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
+                        color = '#ff785a' # red
+                    draw.rectangle(shape, fill=color, outline='black')
+        img = ImageTk.PhotoImage(img)
+        return img
 
     def debugMethod(self):
-        self.drawLayout(self.allPerms)
-        counter = 0
+        img = self.drawLayout(self.allPerms)
+        label = Label(self.viewFrame, image=img)
+        label.image = img
+        label.grid()
         
     #LEFT CLICK BUTTON ACTION
     def gridButtonLeftWrapper(self, i, j): 
