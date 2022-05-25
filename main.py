@@ -49,10 +49,11 @@ class Room:
         print('\n')
 
     def updatePosition(self, placedDoor):
-        deltaX = (placedDoor.xpos - placedDoor.relativeX) +1
-        deltaY = (placedDoor.ypos - placedDoor.relativeY) +1
-        self.relativeX += self.roomSize['x'] + deltaX
-        self.relativeY += self.roomSize['y'] + deltaY
+        deltaX = (placedDoor.relativeX - placedDoor.xpos)
+        deltaY = (placedDoor.relativeY - placedDoor.ypos)
+        print("DeltaX:", deltaX, "Delta Y:", deltaY) # DELETE
+        self.relativeX += deltaX
+        self.relativeY += deltaY
         for i in self.doorPositions:
             if i == placedDoor:
                 continue
@@ -238,14 +239,63 @@ class LayoutGenerator(tk.Tk):
             currentRooms.add(doorPair[0].parent)
             currentRooms.add(doorPair[1].parent)
             currentRooms.difference(roomsChecked)
-            for i in doorPair:
+            for door in doorPair:
+                otherDoor = None
+                for j in doorPair:
+                    if j == door:
+                        continue
+                    else:
+                        otherDoor = j
                 if len(roomsChecked) == 0:
-                    roomsChecked.add(i.parent)
+                    roomsChecked.add(door.parent)
+                    currentRooms.remove(door.parent)
                     continue
-                if i.parent in currentRooms: # If the door's parent is in current rooms then the door hasn't had its position updated.
-                    i.parent.updatePosition(i)
-        print("type for tmp:", type(tmp))  # DELETE
+                if door.parent in currentRooms: # If the door's parent is in current rooms then the door hasn't had its position updated.
+                    if door.direction == 0: # N
+                        door.relativeX = otherDoor.relativeX
+                        door.relativeY = otherDoor.relativeY+1
+                    elif door.direction == 1: # S
+                        door.relativeX = otherDoor.relativeX
+                        door.relativeY = otherDoor.relativeY-1
+                    elif door.direction == 3: # W
+                        door.relativeX = otherDoor.relativeX+1
+                        door.relativeY = otherDoor.relativeY 
+                    elif door.direction == 4: # E
+                        door.relativeX = otherDoor.relativeX-1
+                        door.relativeY = otherDoor.relativeY
+                    print("Door XY:",door.relativeX, door.relativeY)
+                    door.parent.updatePosition(door)
+                    roomsChecked.add(door.parent)
         self.oldPerms.append(tmp)
+        parents = set()
+        for i in self.oldPerms[-1]:
+            for j in i:
+                parents.add(j.parent)
+
+        for i in parents:
+            print(f"Room:{i.roomIndex}, pos: ({i.relativeX},{i.relativeY})")
+
+        xFactor = 0
+        yFactor = 0
+        for room in parents: #Updating all positions to be positive.
+            if room.relativeX < xFactor:
+                xFactor = room.relativeX - room.roomSize['x']
+            if room.relativeY < yFactor:
+                yFactor = room.relativeY - room.roomSize['y']
+        xFactor = abs(xFactor)
+        print("xfac", xFactor) # DELETE
+        yFactor = abs(yFactor)
+        print("yfac", yFactor)# DELETE
+        for room in parents: 
+            room.relativeX += xFactor
+            room.relativeY += yFactor
+            for door in room.doorPositions:
+                door.relativeX += xFactor
+                door.relativeY += yFactor
+
+        for i in parents:
+            print(f"Room:{i.roomIndex}, pos: ({i.relativeX},{i.relativeY})")
+
 
     def debugMethod(self):
         self.drawLayout(self.allPerms)
@@ -339,8 +389,9 @@ class LayoutGenerator(tk.Tk):
         goodPerms = []
         t1 = time.time() # DELETE
         for i in perms:
+            # TODO Currently allows duplicates of each perm in reverse order.
             if self.isValidPerm(i):
-                print("was valid")
+                print("was valid") # DELETE
                 goodPerms.append(i)
         t2 = time.time() # DELETE
         print("Time:", t2-t1) # DELETE
