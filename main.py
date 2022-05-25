@@ -35,8 +35,8 @@ class Room:
 
     def __init__(self, roomSize, doorPositions):
         self.roomSize = roomSize
-        self.relativeX = roomSize['y']
-        self.relativeY = roomSize['x']
+        self.relativeX = roomSize['x']
+        self.relativeY = roomSize['y']
         self.doorPositions = doorPositions
         self.img = self.draw()
         print('room created of size:', self.roomSize) # DELETE
@@ -276,18 +276,18 @@ class LayoutGenerator(tk.Tk):
         xMax = 0
         yMax = 0
         for room in parents: #Updating all positions to be positive.
-            if room.relativeX < xFactor:
+            if room.relativeX <= xFactor:
                 xFactor = room.relativeX - room.roomSize['x']
-            if room.relativeY < yFactor:
+            if room.relativeY <= yFactor:
                 yFactor = room.relativeY - room.roomSize['y']
             if room.relativeX > xMax:
-                xMax = room.relativeX
+                xMax = room.relativeX 
             if room.relativeY > yMax:
-                yMax = room.relativeY
+                yMax = room.relativeY 
         xFactor = abs(xFactor)
         yFactor = abs(yFactor)
-        xMax += xFactor + 1
-        yMax += yFactor
+        xMax += xFactor +1
+        yMax += yFactor +1
         for room in parents: 
             room.relativeX += xFactor
             room.relativeY += yFactor
@@ -295,31 +295,32 @@ class LayoutGenerator(tk.Tk):
                 door.relativeX += xFactor
                 door.relativeY += yFactor
         pixelsPerTile = 25
-        print("Xmax:", xMax, "yMax:", yMax )
         img = Image.new('RGB', (xMax*pixelsPerTile+1, yMax*pixelsPerTile+1), (125, 125, 125))
         draw = ImageDraw.Draw(img)
         for room in parents:
             doors = []
             for door in room.doorPositions:
-                x = (door.relativeX) * pixelsPerTile
-                y = (door.relativeY) * pixelsPerTile
+                x = (door.relativeX)
+                y = (door.relativeY)
                 doors.append((x, y))
             for i in doors:
                 print('door:',i)
-            x2 = (room.relativeX+1)*pixelsPerTile
-            y2 = (room.relativeY)*pixelsPerTile
-            x1 = x2 - ((room.roomSize['x'])*pixelsPerTile)
-            y1 = y2 - ((room.roomSize['y'])*pixelsPerTile)
-            print(f"x1:{x1} y1:{y1} x2:{x2}: y2:{y2} ppt:{pixelsPerTile}")
-            for i in range(x1, x2, 25):
-                for j in range(y1, y2, 25):
+            x2 = (room.relativeX+1)
+            y2 = (room.relativeY+1)
+            x1 = (room.relativeX - room.roomSize['x'])
+            y1 = (room.relativeY - (room.roomSize['y']))
+            print(f"x1:{x1} y1:{y1} x2:{x2}: y2:{y2}") # DELETE
+            for i in range(x1, x2):
+                for j in range(y1, y2):
+                    imod = i * pixelsPerTile
+                    jmod = j * pixelsPerTile
                     print('i, j:',i, j)
                     if (i, j) in doors:
-                        print(i, j, "found in doors" )
-                        shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
+                        print(i, j, "found in doors" ) # DELETE
+                        shape = [(imod, jmod), (imod+pixelsPerTile, jmod+pixelsPerTile)]
                         color = '#187225' # green
                     else:
-                        shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
+                        shape = [(imod, jmod), (imod+pixelsPerTile, jmod+pixelsPerTile)]
                         color = '#ff785a' # red
                     draw.rectangle(shape, fill=color, outline='black')
         img = ImageTk.PhotoImage(img)
