@@ -4,7 +4,6 @@
     CIT 128: Python Programming II
     Student Directed Project
 '''
-from math import perm
 import tkinter as tk
 from itertools import permutations
 from tkinter import ttk, Frame, Button, PhotoImage, Label, messagebox
