@@ -4,6 +4,7 @@
     CIT 128: Python Programming II
     Student Directed Project
 '''
+#TODO Add highlight around each room to make it easier to tell them apart.
 import tkinter as tk
 from itertools import permutations
 from tkinter import ttk, Frame, Button, PhotoImage, Label, messagebox
