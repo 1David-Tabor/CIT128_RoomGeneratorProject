@@ -320,10 +320,10 @@ class LayoutGenerator(tk.Tk):
                 xMax = room.relativeX 
             if room.relativeY > yMax:
                 yMax = room.relativeY 
-        xFactor = abs(xFactor)
-        yFactor = abs(yFactor)
-        xMax += xFactor +1
-        yMax += yFactor +1
+        xFactor = abs(xFactor) +3
+        yFactor = abs(yFactor) +3
+        xMax += xFactor +2
+        yMax += yFactor +2
         for room in parents: 
             room.relativeX += xFactor
             room.relativeY += yFactor
@@ -361,6 +361,12 @@ class LayoutGenerator(tk.Tk):
                     color = '#187225' # green
                     draw.rectangle(shape, fill=color, outline='black')
         img = ImageTk.PhotoImage(img)
+        for room in parents:  # Reset doors and rooms.
+            room.relativeX = room.roomSize['x']
+            room.relativeY = room.roomSize['y']
+            for door in room.doorPositions:
+                door.relativeX = door.xpos
+                door.relativeY = door.ypos
         return img
 
     def nextPerm(self):
@@ -452,12 +458,12 @@ class LayoutGenerator(tk.Tk):
     def permuteBtn(self):
         valids = self.validDoorConnections(self.allRooms)
         perms = permutations(valids, len(self.allRooms)-1)
-        goodPerms = []
+        goodPerms = set()
         t1 = time.time()
         for i in perms:
-            # TODO Currently allows duplicates of each perm in reverse order.
             if self.isValidPerm(i):
-                goodPerms.append(i)
+                goodPerms.add(frozenset(i))
+        goodPerms = list(goodPerms)
         t2 = time.time() 
         print("Good Permutations Found in:", t2-t1) 
         print("Good perms:", type(goodPerms))
@@ -500,11 +506,7 @@ class LayoutGenerator(tk.Tk):
             self.updateViewFrame()
             self.clearSize()
         else: 
-            if check1:
-                messagebox.showinfo("uh-oh.","Minimum room size is 2x2.")
-            if check2:
-                messagebox.showinfo("uh-oh.","Minimum room size is 2x2.")
-            messagebox.showinfo("uh-oh.","Minimum room size is 2x2.")
+            messagebox.showinfo("Invalid Submission","Minimum room size is 2x2\nAnd rooms must contain at least one door.")
 
     def confirmDoor(self):
         if self.currDoor != None:
