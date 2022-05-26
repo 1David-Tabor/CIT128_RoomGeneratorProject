@@ -231,7 +231,8 @@ class LayoutGenerator(tk.Tk):
                         'This will come up with the possible combinations of rooms behind the scenes.\n'
                         'Then click the \'Next Permutation\' Button to see a permutation.\n'
                         'The \'Next Permutation\' Button will pick a random permutation for you and display it.\n'
-                        'After you have viewed every permutation a graphic will appear alerting you.')
+                        'After you have viewed every permutation a graphic will appear alerting you.\n'
+                        'If you would like to view the permutations again, press the \'Make Permutations\' Button.')
         inputHelpLabel2 = Label(helpFrame, font=('arial bold', 20), text=inputHelpTitle)
         inputHelpLabel3 = Label(helpFrame,anchor='e', justify='left', text=inputHelpText1)
         inputHelpLabel2.grid(row=2)
