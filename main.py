@@ -91,7 +91,7 @@ class Room:
                 else:
                     shape = [(i, j), (i+pixelsPerTile, j+pixelsPerTile)]
                     color = '#ff785a' # red
-                draw.rectangle(shape, fill=color, outline='black')
+                draw.rectangle(shape, fill=color, outline='black', width=1)
         img = ImageTk.PhotoImage(img)
         return img
 
@@ -135,6 +135,7 @@ class LayoutGenerator(tk.Tk):
         self.allRooms = []
         self.allPerms = []
         self.oldPerms = []
+        self.roomLbls = []
         self.screenSetup()
         
     def makeButtonGrid(self, size, frame):
@@ -144,7 +145,8 @@ class LayoutGenerator(tk.Tk):
             'selected' : PhotoImage(file='images/redbox.png'),
             'door'     : PhotoImage(file='images/door.png'),
             'hl_door'  : PhotoImage(file='images/hl_door.png'),
-            'nmp'      : PhotoImage(file='images/nmp.png')
+            'nmp'      : PhotoImage(file='images/nmp.png'),
+            'perms'    : PhotoImage(file='images/permsready.png')
         }
         for i in range(size):
             for j in range(size):
@@ -189,10 +191,11 @@ class LayoutGenerator(tk.Tk):
         controlsFrame.grid(row=0, column=0)
         btnHeight, btnWidth = 5, 10
         doorConfirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth, text='Door\nConfirm', command=self.confirmDoor)
-        confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Confirm', command=self.confirmRoom)
+        confirmBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Room\nConfirm', command=self.confirmRoom)
+        resetBtn = Button(controlsFrame, height=btnHeight, width=btnWidth,text='Reset', command=self.resetBtn)
         doorConfirmBtn.grid(row=0, column=1)
         confirmBtn.grid(row=0, column=2)
-
+        resetBtn.grid(row=0, column=3)
         # Quadrant 3: room editing grid.
         gridFrame = Frame(inputFrameL, padx=5, pady=5)
         gridFrame.grid(row=1, column=0)
@@ -206,9 +209,9 @@ class LayoutGenerator(tk.Tk):
         permutationBtn = Button(self.outputFrame, height=btnHeight, width=btnWidth, text='Make\nPermutations',  command=self.permuteBtn)
         permutationBtn.grid(row=0, column=0)
         sizeBtn = Button(self.outputFrame, height=btnHeight, width=btnWidth, text='Next\nPermutation',  command=self.nextPerm)
-        sizeBtn.grid(row=1, column=0)
-        self.outputLabel = Label(self.outputFrame)
-        self.outputLabel.grid(row=0,column=1)
+        sizeBtn.grid(row=0, column=1)
+        self.outputLabel = Label(self.outputFrame, anchor='e')
+        self.outputLabel.grid(row=1,columnspan=2)
 
         # Help Frame Setup
         inputHelpTitle = 'Input Screen'
@@ -335,7 +338,7 @@ class LayoutGenerator(tk.Tk):
             print('Size: x:{} y:{}'.format(i.roomSize['x'], i.roomSize['y']))
         pixelsPerTile = 25
         self.oldPerms.append(tmp)
-        img = Image.new('RGB', (xMax*pixelsPerTile+1, yMax*pixelsPerTile+1), (125, 125, 125))
+        img = Image.new('RGB', (xMax*pixelsPerTile+1, yMax*pixelsPerTile+1), (256, 256, 256))
         draw = ImageDraw.Draw(img)
         doors = []
         roomTiles = []
@@ -360,6 +363,10 @@ class LayoutGenerator(tk.Tk):
                     shape = [(imod, jmod), (imod+pixelsPerTile, jmod+pixelsPerTile)]
                     color = '#187225' # green
                     draw.rectangle(shape, fill=color, outline='black')
+        for i in parents:
+            shape = [((i.relativeX-i.roomSize['x'])*pixelsPerTile, (i.relativeY-i.roomSize['y'])*pixelsPerTile), ((i.relativeX+1)*pixelsPerTile, (i.relativeY+1)*pixelsPerTile)]
+            color = '#1C3144'
+            draw.rectangle(shape, outline=color, width=3)
         img = ImageTk.PhotoImage(img)
         for room in parents:  # Reset doors and rooms.
             room.relativeX = room.roomSize['x']
@@ -440,6 +447,14 @@ class LayoutGenerator(tk.Tk):
                 currBtn['button'].configure(image=self.icons['door'])
                 currBtn['button'].image = self.icons['door']
 
+    def resetBtn(self):
+        self.clearSize()
+        self.allPerms = []
+        self.allRooms = []
+        self.oldPerms = []
+        self.outputLabel.configure(image=self.icons['white'])
+        self.updateViewFrame()
+
     def clearSize(self):
         #Resets all icons on grid and sets room size to 0.
         self.allDoors = []
@@ -449,26 +464,33 @@ class LayoutGenerator(tk.Tk):
         self.roomSize['y'] = 0
     
     def updateViewFrame(self):
+        for label in self.roomLbls:
+            label.destroy()
         for i in range(len(self.allRooms)):
             img = self.allRooms[i].img
             label = Label(self.viewFrame, image=img)
             label.image = img
-            label.grid(row = i)
+            label.grid(row = i) 
+            self.roomLbls.append(label)
 
     def permuteBtn(self):
-        valids = self.validDoorConnections(self.allRooms)
-        perms = permutations(valids, len(self.allRooms)-1)
-        goodPerms = set()
-        t1 = time.time()
-        for i in perms:
-            if self.isValidPerm(i):
-                goodPerms.add(frozenset(i))
-        goodPerms = list(goodPerms)
-        t2 = time.time() 
-        print("Good Permutations Found in:", t2-t1) 
-        print("Good perms:", type(goodPerms))
-        print("All perms:", type(self.allPerms))
-        self.allPerms = goodPerms
+        if len(self.allRooms) <= 1:
+            messagebox.showinfo("Invalid Submission","Must have at least 2 rooms created.")
+        else:
+            valids = self.validDoorConnections(self.allRooms)
+            perms = permutations(valids, len(self.allRooms)-1)
+            goodPerms = set()
+            t1 = time.time()
+            for i in perms:
+                if self.isValidPerm(i):
+                    goodPerms.add(frozenset(i))
+            goodPerms = list(goodPerms)
+            t2 = time.time() 
+            print("Good Permutations Found in:", t2-t1) 
+            print("Good perms:", type(goodPerms))
+            print("All perms:", type(self.allPerms))
+            self.allPerms = goodPerms
+            self.outputLabel.configure(image=self.icons['perms'])
 
     def isValidPerm(self, perm):
         for i in perm:
