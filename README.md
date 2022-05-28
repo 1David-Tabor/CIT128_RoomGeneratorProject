@@ -19,11 +19,13 @@ https://youtu.be/ZaPP4azJv2s
 
 ### Install Instructions
 
-Add any install instructions, if needed. This includes how to install included modules or libraries as well as configurations. You may remove this section if no special instructions are required.
+This program requires the install of the PIL (Pillow) module for python image editing.
+Instructions for install can be found in the PIL documentation.
+https://pillow.readthedocs.io/en/stable/installation.html
 
 ## Software Engineering
 
-Describe the software engineering techniques used for the design and development of this program.
+This project used many software engineering techniques. The SLDC lifecycle was employed to create this project. First was the planning phase where I came up with a rough outline of what the program should do. Next, the design phase took place where the overall design of the program was considered and approved. Next was implementation, which was the longest phase, which consisted of implementing the choices made in the previous two phases into working code. Finally, the testing phase, which was admittedly not nearly as thourough as it should have been due poor time management. The next phase is maintenence and working on improving the brevity and functionality of my code.
 
 ## Directions and Grading Rubric
 
