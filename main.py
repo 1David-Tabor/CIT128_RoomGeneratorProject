@@ -160,6 +160,13 @@ class LayoutGenerator(tk.Tk):
         self.screenSetup()
         
     def makeButtonGrid(self, size, frame):
+        '''
+        Creates a grid of buttons for size selection and door placement.
+
+        Parameters:
+            size (Tuple): x and y size for the button grid.
+            frame (Frame): frame where button grid will be created.
+        '''
         self.icons = {
             'default'  : PhotoImage(file='images/tanbox.png'),
             'white'    : PhotoImage(file='images/image2.png'),
@@ -187,6 +194,12 @@ class LayoutGenerator(tk.Tk):
                 self.btns[i][j] = btn
 
     def screenSetup(self):
+        '''
+        Sets up tabs, frames, labels, and some buttons.
+        
+        Parameters:
+            None
+        '''
         self.screenWidth = (int(self.winfo_screenwidth() * self.winSizeMulti))
         self.screenHeight = (int(self.winfo_screenheight() * self.winSizeMulti))
         self.geometry(f"{self.screenWidth}x{self.screenHeight}")
