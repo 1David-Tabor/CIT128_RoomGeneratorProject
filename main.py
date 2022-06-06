@@ -100,6 +100,15 @@ class Room:
         return img
 
 class Door:
+    '''
+    Object to serve as children to rooms and may pair up to form connection points between rooms.
+    
+    Parameters:
+        x (int): x coordinate of door within it's parent room.
+        y (int): y coordinate of door within it's parent room.
+        direction (int): representative number of the door's cardinal direction. (N, S, W, E)->(0, 1, 3, 4)
+    '''
+
     def __init__(self, x, y, direction):
         self.xpos = x
         self.ypos = y
