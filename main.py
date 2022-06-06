@@ -134,6 +134,14 @@ class LayoutGenerator(tk.Tk):
         clearSize(): Resets icons to default, deletes room in progress.
         updateViewFrame(): Displays room images to the right of the grid.
         confirmDoor(): Adds the current door to the current room. Deletes older door if there is a conflict.
+        validDoorConnections(roomList): Finds list of valid door pairs (N->S, E->W)and returns it.
+        doorMath(door1, door2): Determines if two doors make a valid pair using their direction value.
+        drawLayout(permList): Creates representative image of a permutation.
+        nextPerm(): Gets next permutation and calls drawLayout to create image.
+        resetBtn(): Resets grid, permutation list, and created rooms.
+        permuteBtn(): Creates list of permutations from created rooms.
+        isValidPerm(perm): Checks to ensure a permutation does not contain the same room twice or an impossible combination.
+        confirmRoom(): Adds current room to list for use in a permutation.
     '''
     def __init__(self):
         tk.Tk.__init__(self)
