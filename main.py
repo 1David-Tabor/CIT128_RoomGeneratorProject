@@ -39,6 +39,7 @@ class Room:
         to the room size, and the 'direction' of the door.
     
     Methods: 
+        updatePosition: updates room and children(doors) relative positions for placement.
         draw: creates representative image of the room and it's door positions.
     '''
 
@@ -50,6 +51,12 @@ class Room:
         self.img = self.draw()
 
     def updatePosition(self, placedDoor):
+        """
+        Updates room and children(doors) relative positions for placement.
+        
+        Parameters:
+            placedDoor (door): door object which has already been "placed" i.e. it's relative position is already updated.
+        """
         deltaX = (placedDoor.relativeX - placedDoor.xpos)
         deltaY = (placedDoor.relativeY - placedDoor.ypos)
         self.relativeX += deltaX
