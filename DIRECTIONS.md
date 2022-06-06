@@ -1,6 +1,6 @@
 # CIT 128 Project: Student Directed Project Directions
 
-**Version:** 12/20/2021
+**Version: 1.00** 12/20/2021
 
 ## Directions
 
