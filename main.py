@@ -273,6 +273,15 @@ class LayoutGenerator(tk.Tk):
         inputHelpLabel3.grid(row=3)
 
     def validDoorConnections(self, roomList):
+        '''
+        Creates list of doors which can be paired together as a connection.
+
+        Parameters:
+            roomList (List): List containing all confirmed Rooms.
+
+        Returns:
+            tmp (List): List of tuples, each tuple being a valid connection from the confirmed rooms.
+        '''
         doorList = []
         validPairs = set()
         for i in roomList:
@@ -294,12 +303,31 @@ class LayoutGenerator(tk.Tk):
         return tmp
     
     def doorMath(self, door1, door2):
+        '''
+        Checks if two doors have compatible directions, i.e. North & South or East & West
+
+        Parameters:
+            door1 (Door): door object to have direction checked and compared.
+            door2 (Door): door object to have direction checked and compared.
+
+        Returns:
+            Boolean.
+        '''
         if abs(door1.direction) - abs(door2.direction) == 1:
             return True
         else:
             return False
 
     def drawLayout(self, permList):
+        '''
+        Creates representative image of next permutation in the permList.
+
+        Parameters:
+            permList (List): List of lists of door combinations.
+
+        Returns:
+            img (Image): Image of permutation, draws room and door locations.
+        '''
         if len(permList) == 0:
             return self.icons['nmp']
         randIndex = random.randrange(0, len(permList))
@@ -405,6 +433,12 @@ class LayoutGenerator(tk.Tk):
         return img
 
     def nextPerm(self):
+        '''
+        Calls drawlayout to get next permutation image and displays the image.
+
+        Parameters:
+            None
+        '''
         img = self.drawLayout(self.allPerms)
         self.outputLabel.configure(image = img)
         self.outputLabel.image = img
@@ -413,6 +447,12 @@ class LayoutGenerator(tk.Tk):
     def gridButtonLeftWrapper(self, i, j): 
         return lambda Button: self.gridButtonLeft(self.btns[i][j])
     def gridButtonLeft(self, btn):
+        '''
+        Activates on left click, updates grid to show size of selection and adds size to current room.
+
+        Parameters:
+            btn (Button): button which is clicked gets passed in to get location.
+        '''
         if self.roomSize != {'x':0,'y':0}:
             self.currDoor = None
             self.clearSize()
@@ -424,6 +464,12 @@ class LayoutGenerator(tk.Tk):
     def gridButtonRightWrapper(self, i, j):
         return lambda Button: self.gridButtonRight(self.btns[i][j])
     def gridButtonRight(self, btn):
+        '''
+        Activates on right click. Checks if location is a valid spot for a door, places the door.
+        
+        Parameters:
+            btn (Button): button which is clicked gets passed in to get location.
+        '''
         validDoor = False
         direction = None
         x = btn['xpos']
@@ -451,6 +497,16 @@ class LayoutGenerator(tk.Tk):
             self.updateIcons(x, y, self.icons['hl_door'], batch=False)
 
     def updateIcons(self, x, y, icon, batch=True, updateDoors=False):
+        '''
+        Updates icons on the button grid.
+
+        Parameters:
+            x (int): x coordinate of furthest right button to be updated.
+            y (int): y coordinate of furthest down button to be updated.
+            icon (Image): icon which should replace all updated buttons.
+            batch (Boolean): determines whether all tiles through the x,y shoud be updated or the singular tile.
+            updateDoors (Boolean): determines whether doors should be removed from button grid or updated.            
+        '''
         if batch == True:
             for i in range(y+1):
                 for j in range(x+1):
@@ -468,6 +524,12 @@ class LayoutGenerator(tk.Tk):
                 currBtn['button'].image = self.icons['door']
 
     def resetBtn(self):
+        '''
+        Clears size of current room, resets permutations and rooms. Clears grid.
+
+        Parameters:
+            None
+        '''
         self.clearSize()
         self.allPerms = []
         self.allRooms = []
@@ -476,7 +538,12 @@ class LayoutGenerator(tk.Tk):
         self.updateViewFrame()
 
     def clearSize(self):
-        #Resets all icons on grid and sets room size to 0.
+        '''
+        Removes all doors, current door, updates icons, and sets room size to 0.
+
+        Parameters:
+            None
+        '''
         self.allDoors = []
         self.currDoor = None
         self.updateIcons(self.roomSize['x'], self.roomSize['y'], self.icons['default'])
@@ -484,6 +551,13 @@ class LayoutGenerator(tk.Tk):
         self.roomSize['y'] = 0
     
     def updateViewFrame(self):
+        '''
+        Displays created rooms on the right hand side of input screen.
+
+        Parameters:
+            None
+        '''
+        
         for label in self.roomLbls:
             label.destroy()
         for i in range(len(self.allRooms)):
@@ -494,6 +568,13 @@ class LayoutGenerator(tk.Tk):
             self.roomLbls.append(label)
 
     def permuteBtn(self):
+        '''
+        Sets allperms to a list of valid permutations based on all created rooms.
+
+        Parameters:
+            None
+        '''
+        
         if len(self.allRooms) <= 1:
             messagebox.showinfo("Invalid Submission","Must have at least 2 rooms created.")
         else:
@@ -510,6 +591,16 @@ class LayoutGenerator(tk.Tk):
             self.outputLabel.configure(image=self.icons['perms'])
 
     def isValidPerm(self, perm):
+        '''
+        Determines if a permutation contains impossble combinations.
+
+        Parameters:
+            perm (List): List of tuples containing door pairs.
+
+        Returns:
+            Boolean
+        '''
+        
         for i in perm:
             for j in perm:
                 if i == j:
@@ -530,6 +621,13 @@ class LayoutGenerator(tk.Tk):
         return True
 
     def confirmRoom(self):
+        '''
+        Checks if a room is properly created and then submits it too the list of all rooms.
+
+        Parameters:
+            None
+        '''
+        
         check1 = False
         check2 = False
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0:
@@ -548,6 +646,13 @@ class LayoutGenerator(tk.Tk):
             messagebox.showinfo("Invalid Submission","Minimum room size is 2x2\nAnd rooms must contain at least one door.")
 
     def confirmDoor(self):
+        '''
+        Submits door as a valid door to the Room's list of doors.
+
+        Parameters:
+            None
+        '''
+        
         if self.currDoor != None:
             door = Door(self.currDoor['x'], self.currDoor['y'], self.currDoor['direction'])
             if self.allDoors == []:
