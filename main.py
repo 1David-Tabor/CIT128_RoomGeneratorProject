@@ -390,15 +390,15 @@ class LayoutGenerator(tk.Tk):
         for room in parents:  # Move each room by a factor of x and y factor.
             room.relativeX += xFactor
             room.relativeY += yFactor
-            for door in room.doorPositions:
+            for door in room.doorPositions: # adjust the position of each room's doors.
                 door.relativeX += xFactor
                 door.relativeY += yFactor
-        pixelsPerTile = 25
-        self.oldPerms.append(tmp)
-        img = Image.new('RGB', (xMax*pixelsPerTile+1, yMax*pixelsPerTile+1), (256, 256, 256))
-        draw = ImageDraw.Draw(img)
-        doors = []
-        roomTiles = []
+        pixelsPerTile = 25 # Pixel size of each square tile in the image.
+        self.oldPerms.append(tmp) # Add tmp to list of permutations already shown.
+        img = Image.new('RGB', (xMax*pixelsPerTile+1, yMax*pixelsPerTile+1), (256, 256, 256)) #Create canvas.
+        draw = ImageDraw.Draw(img) 
+        doors = [] # Spot to place all the doors that need to be drawn.
+        roomTiles = [] # Spot to place all the room tiles which need to be drawn.
         for room in parents:
             for door in room.doorPositions:
                 x = (door.relativeX)
@@ -407,24 +407,24 @@ class LayoutGenerator(tk.Tk):
             for i in range(room.relativeX-room.roomSize['x'], room.relativeX+1):
                 for j in range(room.relativeY-room.roomSize['y'], room.relativeY+1):
                     roomTiles.append((i, j))
-        for i in range(xMax):
+        for i in range(xMax): # Go through each tile up to the max size.
             for j in range(yMax):
-                imod = i*pixelsPerTile
+                imod = i*pixelsPerTile # calculates tile position on the canvas
                 jmod = j*pixelsPerTile
-                if (i, j) in roomTiles:
+                if (i, j) in roomTiles: # If current tile is a room tile paint red.
                     shape = [(imod, jmod), (imod+pixelsPerTile, jmod+pixelsPerTile)]
                     color = '#ff785a' # red
                     draw.rectangle(shape, fill=color, outline='black')
-                if (i, j) in doors:
+                if (i, j) in doors: # if current tile is  a door paint green.
                     shape = [(imod, jmod), (imod+pixelsPerTile, jmod+pixelsPerTile)]
                     color = '#187225' # green
                     draw.rectangle(shape, fill=color, outline='black')
-        for i in parents:
+        for i in parents: # Outline all the rooms. Probably could combine these two loops. TODO 
             shape = [((i.relativeX-i.roomSize['x'])*pixelsPerTile, (i.relativeY-i.roomSize['y'])*pixelsPerTile), ((i.relativeX+1)*pixelsPerTile, (i.relativeY+1)*pixelsPerTile)]
             color = '#1C3144'
             draw.rectangle(shape, outline=color, width=3)
         img = ImageTk.PhotoImage(img)
-        for room in parents:  # Reset doors and rooms.
+        for room in parents:  # Reset door and room positions.
             room.relativeX = room.roomSize['x']
             room.relativeY = room.roomSize['y']
             for door in room.doorPositions:
