@@ -600,7 +600,6 @@ class LayoutGenerator(tk.Tk):
         Returns:
             Boolean
         '''
-        
         for i in perm:
             for j in perm:
                 if i == j:
@@ -627,7 +626,6 @@ class LayoutGenerator(tk.Tk):
         Parameters:
             None
         '''
-        
         check1 = False
         check2 = False
         if self.roomSize['x'] != 0 and self.roomSize['y'] != 0:
@@ -652,7 +650,6 @@ class LayoutGenerator(tk.Tk):
         Parameters:
             None
         '''
-        
         if self.currDoor != None:
             door = Door(self.currDoor['x'], self.currDoor['y'], self.currDoor['direction'])
             if self.allDoors == []:
