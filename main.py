@@ -329,17 +329,17 @@ class LayoutGenerator(tk.Tk):
             img (Image): Image of permutation, draws room and door locations.
         '''
         if len(permList) == 0:
-            return self.icons['nmp']
+            return self.icons['nmp'] #Returns "no more permutations" icon.
         randIndex = random.randrange(0, len(permList))
-        tmp = list(permList.pop(randIndex))
+        tmp = list(permList.pop(randIndex)) # set tmp to a random permutaiton created.
         roomsPositioned = set()
         for doorPair in tmp: 
-            if len(roomsPositioned) == 0:
+            if len(roomsPositioned) == 0: # if no rooms have been placed. place the first avaliable.
                 roomsPositioned.add(doorPair[0].parent)
             currentRooms = set()
             currentRooms.add(doorPair[0].parent)
             currentRooms.add(doorPair[1].parent)
-            currentRooms.difference(roomsPositioned)
+            currentRooms.difference(roomsPositioned) # Ensure rooms aren't being "placed" twice.
             if len(currentRooms.difference(roomsPositioned)) != 1:
                 tmp.remove(doorPair)
                 tmp.append(doorPair)
