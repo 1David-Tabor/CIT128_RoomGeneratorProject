@@ -342,16 +342,16 @@ class LayoutGenerator(tk.Tk):
             currentRooms.difference(roomsPositioned) # Ensure rooms aren't being "placed" twice.
             if len(currentRooms.difference(roomsPositioned)) != 1:
                 tmp.remove(doorPair)
-                tmp.append(doorPair)
+                tmp.append(doorPair)# Puts the pair at the end of tmp.
                 continue
-            otherDoor = None
-            for door in doorPair:
+            otherDoor = None # Otherdoor is a doorway which is already positioned.
+            for door in doorPair:  # The other door's position will be used to position the new room.
                 if door.parent in roomsPositioned:
                     otherDoor = door
             for door in doorPair:
                 if door == otherDoor:
                     continue
-                else:
+                else: #Set newly placed door's position based on direction.
                     if door.direction == 0: # N
                         door.relativeX = otherDoor.relativeX
                         door.relativeY = otherDoor.relativeY+1
@@ -366,13 +366,13 @@ class LayoutGenerator(tk.Tk):
                         door.relativeY = otherDoor.relativeY
                     door.parent.updatePosition(door)
                     roomsPositioned.add(door.parent)
-        parents = set()
+        parents = set()  #Parents is a set of all rooms used in the current permutaiton.
         for i in tmp:
             for j in i:
                 parents.add(j.parent)
-        xFactor = 0
-        yFactor = 0
-        xMax = 0
+        xFactor = 0 # Amount to adjust each room's x position by.
+        yFactor = 0 # Amount to adjust each room's y position by.
+        xMax = 0 # find out how "large" the permutaiton is to create the canvas.
         yMax = 0
         for room in parents: #Updating all positions to be positive.
             if room.relativeX <= xFactor:
@@ -383,11 +383,11 @@ class LayoutGenerator(tk.Tk):
                 xMax = room.relativeX 
             if room.relativeY > yMax:
                 yMax = room.relativeY 
-        xFactor = abs(xFactor) +3
-        yFactor = abs(yFactor) +3
+        xFactor = abs(xFactor) +3 # +3s and +2s create a little extra room which helps the
+        yFactor = abs(yFactor) +3 # rooms draw more smoothly. Could be removed with effort. TODO
         xMax += xFactor +2
         yMax += yFactor +2
-        for room in parents: 
+        for room in parents:  # Move each room by a factor of x and y factor.
             room.relativeX += xFactor
             room.relativeY += yFactor
             for door in room.doorPositions:
