@@ -6,7 +6,7 @@
 '''
 import tkinter as tk
 from itertools import permutations
-from tkinter import ttk, Frame, Button, PhotoImage, Label, messagebox
+from tkinter import ttk, Frame, Button, PhotoImage, Label, messagebox, Scrollbar
 from PIL import Image, ImageDraw, ImageTk
 import time
 import random
@@ -238,6 +238,7 @@ class LayoutGenerator(tk.Tk):
         # Quadrants 2 & 4: Room viewer.
         self.viewFrame = Frame(inputFrameR, padx=5, pady=5)
         self.viewFrame.grid(row=0, column=0)
+        #TODO Add scrollbar to frame so grid doesn't move around.
 
         # Output Frame Setup
         permutationBtn = Button(self.outputFrame, height=btnHeight, width=btnWidth, text='Make\nPermutations',  command=self.permuteBtn)
