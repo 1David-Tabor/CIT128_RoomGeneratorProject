@@ -8,7 +8,6 @@ import tkinter as tk
 from itertools import permutations
 from tkinter import ttk, Frame, Button, PhotoImage, Label, messagebox, Scrollbar
 from PIL import Image, ImageDraw, ImageTk
-import time
 import random
 
 BTN_L_CLICK = '<Button-1>' #Binds buttons to left click.
@@ -238,7 +237,7 @@ class LayoutGenerator(tk.Tk):
         # Quadrants 2 & 4: Room viewer.
         self.viewFrame = Frame(inputFrameR, padx=5, pady=5)
         self.viewFrame.grid(row=0, column=0)
-        #TODO Add scrollbar to frame so grid doesn't move around.
+        #TODO Add scrollbar to frame so grid doesn't move around.x
 
         # Output Frame Setup
         permutationBtn = Button(self.outputFrame, height=btnHeight, width=btnWidth, text='Make\nPermutations',  command=self.permuteBtn)
@@ -582,12 +581,10 @@ class LayoutGenerator(tk.Tk):
             valids = self.validDoorConnections(self.allRooms)
             perms = permutations(valids, len(self.allRooms)-1)
             goodPerms = set()
-            t1 = time.time()
             for i in perms:
                 if self.isValidPerm(i):
                     goodPerms.add(frozenset(i))
             goodPerms = list(goodPerms)
-            t2 = time.time() 
             self.allPerms = goodPerms
             self.outputLabel.configure(image=self.icons['perms'])
 
