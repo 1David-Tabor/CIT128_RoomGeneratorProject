@@ -7,6 +7,7 @@
 import tkinter as tk
 from itertools import permutations
 from tkinter import ttk, Frame, Button, PhotoImage, Label, messagebox, Scrollbar
+from typing import List
 from PIL import Image, ImageDraw, ImageTk
 import random
 
@@ -583,10 +584,20 @@ class LayoutGenerator(tk.Tk):
             goodPerms = set()
             for i in perms:
                 if self.isValidPerm(i):
+                    self.collisionCheck(i)
                     goodPerms.add(frozenset(i))
             goodPerms = list(goodPerms)
             self.allPerms = goodPerms
             self.outputLabel.configure(image=self.icons['perms'])
+
+    def collisionCheck(self, perm):
+        #Perm is a list of door pairs. (tuples)
+        parents = set
+        for i in perm:
+            for j in i:
+                parents.add(j.parent)
+
+            
 
     def isValidPerm(self, perm):
         '''
