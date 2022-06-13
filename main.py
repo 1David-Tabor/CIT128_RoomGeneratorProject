@@ -408,6 +408,9 @@ class LayoutGenerator(tk.Tk):
             for i in range(room.relativeX-room.roomSize['x'], room.relativeX+1):
                 for j in range(room.relativeY-room.roomSize['y'], room.relativeY+1):
                     roomTiles.append((i, j))
+        tileSet = set(roomTiles)
+        if len(tileSet) != len(roomTiles):
+            return self.drawLayout(self.allPerms)
         for i in range(xMax): # Go through each tile up to the max size.
             for j in range(yMax):
                 imod = i*pixelsPerTile # calculates tile position on the canvas
@@ -584,20 +587,10 @@ class LayoutGenerator(tk.Tk):
             goodPerms = set()
             for i in perms:
                 if self.isValidPerm(i):
-                    self.collisionCheck(i)
                     goodPerms.add(frozenset(i))
             goodPerms = list(goodPerms)
             self.allPerms = goodPerms
-            self.outputLabel.configure(image=self.icons['perms'])
-
-    def collisionCheck(self, perm):
-        #Perm is a list of door pairs. (tuples)
-        parents = set
-        for i in perm:
-            for j in i:
-                parents.add(j.parent)
-
-            
+            self.outputLabel.configure(image=self.icons['perms'])          
 
     def isValidPerm(self, perm):
         '''
